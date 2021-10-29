@@ -5,6 +5,7 @@
     "version": "0.1.0",
     "author": "Tope Daramola <tope.daram@gmail.com>",
     "dependencies": {
+        "@apollo/client": "^3.4.16",
         "@apollo/react-hooks": "^4.0.0",
         "@blueprintjs/core": "^3.42.0",
         "@contentful/rich-text-react-renderer": "^14.1.2",

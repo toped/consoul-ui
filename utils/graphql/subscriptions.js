@@ -1,8 +1,16 @@
 import gql from 'graphql-tag'
 
-subscription($repoName: String!){
-  roomUpdated(repoFullName: $repoName) {
-    id
-    content
+export const ROOM_SUBSCRIPTION = gql`
+  subscription roomUpdated($slug: String!){
+    roomUpdated(slug: $slug){
+      id
+      host
+      slug
+      settings {
+        timeLimit
+        maxPlayers
+        rounds
+      }
+    }
   }
-}
+`

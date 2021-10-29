@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import  Link from 'gatsby-link'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation, useSubscription } from '@apollo/react-hooks'
 import { navigate } from 'gatsby'
 import { toaster } from 'evergreen-ui'
 
@@ -10,6 +10,7 @@ import { Typography, Button, PlayerList } from './primitives'
 import { formatters } from '../../utils/functions'
 import { withFirebaseAuthentication } from './hocs/withFirebaseAuthentication'
 import { DELETE_ROOM } from '../../utils/graphql/mutations'
+import { ROOM_SUBSCRIPTION } from '../../utils/graphql/subscriptions'
 
 const RoomSettings = ({room}) => {
 
@@ -51,6 +52,17 @@ const Lobby = ({ user, room }) => {
 			}
 		)
 	}
+
+	const { data, loading } = useSubscription(
+		ROOM_SUBSCRIPTION,
+		{
+			variables: { slug: room.slug },
+			onSubscriptionData: ({ subscriptionData }) => {
+				console.log(subscriptionData.data)
+			}
+		}
+	)
+
 
 	return (
 		<FullPageDiv>

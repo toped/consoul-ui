@@ -41,7 +41,8 @@ const GamePage = ({ user, signedIn, signInLoading, ...props }) => {
 	return (
 		<Layout
 			title="Game"
-			content={<Content room={roomData?.rooms.length > 0 ? roomData.rooms[0] : null } />}
+			content={!loadingRoom && <Content room={roomData.rooms[0]} />}
+			isLoading={loadingRoom}
 		/>
 	)
 }
