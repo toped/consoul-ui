@@ -6,6 +6,14 @@ export const ROOMS = gql`
       id
       host
       slug
+      players{
+        displayName
+        email
+        photoURL
+        phoneNumber
+        uid
+        isHost
+      }
       settings {
         timeLimit
         maxPlayers

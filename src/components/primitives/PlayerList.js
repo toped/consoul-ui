@@ -16,28 +16,30 @@ const Wrapper = styled.div`
   scrollbar-width: none;  /* Firefox */
 `
 
-const _ = ({players, owner, isOwner}) => {
+const _ = ({players}) => {
 
 	return (
-		<Wrapper className="flex flex-no-wrap overflow-hidden overflow-x-auto">
+		<Wrapper className="flex flex-no-wrap overflow-hidden overflow-x-auto my-4">
 			{
 				players
 					? players.map(user => (
-						<div key={user.uid} className="flex flex-col items-center text-center mr-4">
-							<div className="flex">
-								<Avatar name={user.displayName} size={60} />
-								{user.uid !== owner 
-									? isOwner 
-										? <BanCircleIcon 
-											color="red" 
-											className="cursor-pointer"
-											onClick={() => {}}
-										/> 
-										: null
-									: <CrownIcon color="gold"/>}
+						<div key={user.uid} className="flex items-center text-center mx-2">
+							<div className="flex flex-col items-center justify-center text-center">
+								<div className="flex flex-col items-center">
+									<div>
+										{
+											user.isHost
+												? <CrownIcon color="gold" className="mx-2"/>
+												: <CrownIcon color="transparent" className="mx-2"/>
+										}
+									</div>
+									
+									<Avatar name={user.displayName} size={60} />
+								</div>
+								<Typography variant="tiny" weight="600" className="flex my-2">
+									{user.displayName}
+								</Typography>
 							</div>
-							
-							<Typography variant="tiny" weight="600" className="my-2">{user.displayName}</Typography>
 						</div>
 					))
 					: null

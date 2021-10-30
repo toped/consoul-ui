@@ -9,6 +9,15 @@ export const CREATE_ROOM = gql`
   }
 `
 
+export const UPDATE_ROOM = gql`
+  mutation updateRoom($room: GameRoomInput) {
+    updateRoom(room: $room){
+      id
+      slug
+    }
+  }
+`
+
 export const DELETE_ROOM = gql`
   mutation deleteRoom($host: String) {
     deleteRoom(host: $host)

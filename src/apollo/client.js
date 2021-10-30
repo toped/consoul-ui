@@ -34,11 +34,7 @@ const splitLink = typeof window !== 'undefined' ? split(
 	httpLink,
 ) : httpLink
 
-console.log('typeof window === \'undefined\':', typeof window !== 'undefined')
-console.log('wsLink', wsLink)
-console.log('splitLink', splitLink)
-
 export const client = new ApolloClient({
 	link: splitLink,
-	cache: new InMemoryCache()
+	cache: new InMemoryCache({ addTypename: false })
 })
