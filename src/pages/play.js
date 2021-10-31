@@ -30,7 +30,7 @@ Content.propTypes = {
 
 
 const GamePage = ({ user, signedIn, signInLoading, ...props }) => {
-	if (props['*'] === '') navigate('/404')
+	if (props['*'] === '') navigate('/lost')
 
 	const {subscribeToMore,  data: roomData, loading: loadingRoom } = useQuery(ROOMS, {
 		variables: {
@@ -40,7 +40,7 @@ const GamePage = ({ user, signedIn, signInLoading, ...props }) => {
 			console.log('completed room fetch')
 			console.log(data)
 			if (data.rooms.length === 0) {
-				navigate('/404') // should probably have a dedicated room not found page
+				navigate('/lost') // should probably have a dedicated room not found page
 			}
 		},
 		onError: (err) => {
