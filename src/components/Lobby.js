@@ -31,14 +31,15 @@ RoomSettings.propTypes = {
 const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 
 	useEffect(() => {
-		if (user?.uid && !room?.players.map(p=>p.uid).includes(user.uid)) {
-			addPlayer({
-				displayName: user.displayName,
-				email: user.email,
-				photoURL: user.photoURL,
-				phoneNumber: user.phoneNumber,
-				uid: user.uid
-			})
+		if (user?.uid && !room?.players.map(p => p.uid).includes(user.uid)) {
+			if(room?.players.length < room?.settings.maxPlayers)
+				addPlayer({
+					displayName: user.displayName,
+					email: user.email,
+					photoURL: user.photoURL,
+					phoneNumber: user.phoneNumber,
+					uid: user.uid
+				})
 		}
 		
 		if (user === null) {
