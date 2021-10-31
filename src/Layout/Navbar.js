@@ -1,13 +1,18 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import Link from 'gatsby-link'
+import { useMutation, useLazyQuery } from '@apollo/react-hooks'
+import { toaster } from 'evergreen-ui'
 import { navigate } from 'gatsby'
 import { Navbar, Alignment } from '@blueprintjs/core'
 import { FirebaseContext } from '../components/Firebase'
 
 import { Typography, OnlineCircle } from '../components/primitives'
 import { withFirebaseAuthentication } from '../components/hocs/withFirebaseAuthentication'
+import { formatters } from '../../utils/functions'
+import { DELETE_ROOM, UPDATE_ROOM } from '../../utils/graphql/mutations'
+import { ROOMS } from '../../utils/graphql/queries'
 
 const Container = styled(Navbar)`
 	background-color: ${({theme}) => theme.background};
@@ -36,12 +41,147 @@ const _ = ({
 	page, fixed, signedIn, user, signInLoading, loadingRooms, loadingHostedRooms, loadingPlayingRooms, ...props
 }) => {
 
+	useEffect(() => {
+		console.log('useEffect user updated navbar-> ', {
+			playingRoom: user.playingRoom,
+			hostedRoom: user.hostedRoom
+		})
+	}, [user])
+		
+	
 	const {firebase} = useContext(FirebaseContext)
 
+	/* Query to check if user is hosting a room */
+	const [getUserHostedRooms] = useLazyQuery(
+		ROOMS, {
+			onCompleted: (data) => {
+				console.log('getUserHostedRooms->', data)
+
+				if (data.rooms.length > 0) {
+					console.log('getUserHostedRooms->', data)
+					if (data.rooms[0].players.length > 1) {
+						console.log('attempting to reassigning host')
+						reassignHost(data.rooms[0])
+					} else {
+						console.log('deleting room')
+						deleteRoom()
+					}
+				} else {
+					// Check if user is playing in a room
+					getUserPlayingRooms({
+						variables: {
+							playerUid: user?.uid
+						}
+					})
+				}
+			}, onError: (err) => {
+				console.log(err)
+			}
+		}
+	)
+
+	const [getUserPlayingRooms] = useLazyQuery(
+		ROOMS, {
+			onCompleted: (data) => {
+				// check if hostedRoom exists to avoid subsequent updates to state
+				console.log(data)
+				if (data.rooms.length > 0) {
+					removePlayer(user.playingRoom)
+				} else {
+					//navigate
+					navigate('/login')
+					firebase.doSignOut()
+				}
+			}, onError: (err) => {
+				console.log(err)
+			}
+		}
+	)
+	
+	const [updateRoomMutation] = useMutation(
+		UPDATE_ROOM, {
+			onCompleted: () => {
+				//navigate to home
+				navigate('/login')
+				firebase.doSignOut()
+			},
+			onError: (err) => {
+				toaster.danger(formatters.extractGQLErrorMessage(err))
+			}
+		}
+	)
+
+	const [deleteRoomMutation] = useMutation(
+		DELETE_ROOM, {
+			onCompleted: () => {
+				//navigate to home
+				navigate('/login')
+				firebase.doSignOut()
+			},
+			onError: (err) => {
+				toaster.danger(formatters.extractGQLErrorMessage(err))
+			}
+		}
+	)
+
+	const reassignHost = (room) => {
+		let newPlayerList = room.players.filter(p => !p.isHost && !p.anonymousUser)
+		console.log('newPlayerList', newPlayerList)
+		newPlayerList[0] = {
+			...newPlayerList[0],
+			isHost: true
+		}
+		
+		updateRoomMutation(
+			{
+				variables: {
+					room: {
+						...room,
+						host: newPlayerList[0].uid,
+						players: newPlayerList
+					}
+				}
+			}
+		)
+	}
+
+	const removePlayer = (room) => {
+		let newPlayerList = room.players.filter(p => p.uid !== user.uid)
+
+		updateRoomMutation(
+			{
+				variables: {
+					room: {
+						...room,
+						players: newPlayerList
+					}
+				}
+			}
+		)
+		
+	}
+
+	const deleteRoom = () => {
+		deleteRoomMutation(
+			{
+				variables: {
+					host:  user.uid
+				}
+			}
+		)
+	}
+
+
 	const logOut = () => {
-		if(firebase) {
-			firebase.doSignOut()
-			navigate('/login')
+		if (firebase) {
+			// query for room to make sure details are up to date
+			// then remove user from current room and reassign host if possible, otherwise delete room
+			console.log('loggin user out: ', user.uid)
+			getUserHostedRooms({
+				variables: {
+					host: user.uid
+				}
+			})
 		}
 	}
 	
@@ -62,11 +202,9 @@ const _ = ({
 						))
 					}
 				</NavLinks>
-				<ThemedLink to={ signedIn ? '/' : '/login' } onClick={() => ( signedIn ? logOut() : null )}>
-					<Typography variant="body" className="px-2 m-0" weight="normal">
-						{ signedIn ? 'Logout' : 'Login' }
-					</Typography>
-				</ThemedLink>	
+				<Typography variant="body" className="px-2 m-0 cursor-pointer" weight="normal" onClick={() => ( signedIn ? logOut() : navigate('/login') )}>
+					{ signedIn ? 'Logout' : 'Login' }
+				</Typography>
 				{
 					user && user.displayName
 						?<UserName>

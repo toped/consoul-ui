@@ -39,7 +39,11 @@ const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 				phoneNumber: user.phoneNumber,
 				uid: user.uid
 			})
-		} 
+		}
+		
+		if (user === null) {
+			console.log('allow play as guest')
+		}
 	}, [user])
 
 	useEffect(() => {

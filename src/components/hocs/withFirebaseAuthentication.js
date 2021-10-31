@@ -48,9 +48,11 @@ export function withFirebaseAuthentication(Component) {
 				onCompleted: (data) => {
 					// check if hostedRoom exists to avoid subsequent updates to state
 					if (!user.hostedRoom && data.rooms.length > 0) {
-						setUser({
-							...user,
-							hostedRoom: data.rooms[0]
+						setUser(prev => {
+							return {
+								...prev,
+								hostedRoom: data.rooms[0]
+							}
 						})
 					}
 				},
@@ -62,11 +64,13 @@ export function withFirebaseAuthentication(Component) {
 		const [getUserPlayingRooms, {loading: loadingPlayingRooms, error: roomsPlayingError}] = useLazyQuery(
 			ROOMS, {
 				onCompleted: (data) => {
-					// check if hostedRoom exists to avoid subsequent updates to state
+				// check if hostedRoom exists to avoid subsequent updates to state
 					if (!user.playingRoom && data.rooms.length > 0) {
-						setUser({
-							...user,
-							playingRoom: data.rooms[0]
+						setUser(prev => {
+							return {
+								...prev,
+								playingRoom: data.rooms[0]
+							}
 						})
 					}
 				},
@@ -80,7 +84,12 @@ export function withFirebaseAuthentication(Component) {
 					(user) => {
 						setSignedIn(Boolean(user))
 						setLoading(false)
-						setUser(user)
+						setUser(prev => {		
+							return {
+								...prev,
+								...user
+							}
+						})
 					}
 				)
 			} 

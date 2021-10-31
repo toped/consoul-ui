@@ -29,7 +29,7 @@ Content.propTypes = {
 }
 
 
-const GamePage = ({ user, signedIn, signInLoading, ...props }) => {
+const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
 	if (props['*'] === '') navigate('/lost')
 
 	const {subscribeToMore,  data: roomData, loading: loadingRoom } = useQuery(ROOMS, {
@@ -38,7 +38,6 @@ const GamePage = ({ user, signedIn, signInLoading, ...props }) => {
 		},
 		onCompleted: (data) => {
 			console.log('completed room fetch')
-			console.log(data)
 			if (data.rooms.length === 0) {
 				navigate('/lost') // should probably have a dedicated room not found page
 			}
@@ -78,7 +77,7 @@ const GamePage = ({ user, signedIn, signInLoading, ...props }) => {
 				if(JSON.stringify(prev.rooms[0].players) !== JSON.stringify(subscriptionData.data.roomUpdated.players)){
 					toaster.notify('Player joined!')
 				}
-
+			
 				return Object.assign({}, prev, {
 					rooms: [subscriptionData.data.roomUpdated]
 				})
@@ -105,7 +104,8 @@ GamePage.propTypes = {
 	'*': PropTypes.string,
 	user: PropTypes.object,
 	signedIn: PropTypes.bool,
-	signInLoading: PropTypes.bool
+	signInLoading: PropTypes.bool,
+	setUser: PropTypes.func
 }
 
 export default withFirebaseAuthentication(GamePage)
