@@ -6,23 +6,32 @@ import { FullPageDiv } from '../components/styled-components/FullPageDiv'
 import { Typography, Button } from './primitives'
 import { withFirebaseAuthentication } from './hocs/withFirebaseAuthentication'
 
-const Home = ({ user, loadingRooms }) => {
+const Home = ({ user, loadingHostedRooms, loadingPlayingRooms }) => {
 
 	return (
 		<FullPageDiv>
 			<Typography variant="h3">What you Meme?</Typography>
-			<Link to="/join">
-				<Button className="mb-4" >Join a Game</Button>
-			</Link>
+			{
+				user?.playingRoom
+					?
+					<Link to={`/play/${user.playingRoom.slug}`}>
+						<Button className="mb-4" loading={loadingHostedRooms} color="MediumSeaGreen" outline>Re-join Current Game</Button>
+					</Link>
+					:
+					<Link to="/join">
+						<Button className="mb-4" loading={loadingPlayingRooms}>Join a Game</Button>
+					</Link>
+			}
+
 			{
 				user?.hostedRoom
 					?
 					<Link to={`/play/${user.hostedRoom.slug}`}>
-						<Button className="mb-4" loading={loadingRooms} color="SlateBlue" outline>Re-join Hosted Game</Button>
+						<Button className="mb-4" loading={loadingHostedRooms} color="SlateBlue" outline>Re-join Hosted Game</Button>
 					</Link>
 					:
 					<Link to="/setup">
-						<Button className="mb-4" loading={loadingRooms} outline>Host a Game</Button>
+						<Button className="mb-4" loading={loadingHostedRooms} outline>Host a Game</Button>
 					</Link>
 			}
 			<Link to="/rules">
@@ -34,7 +43,8 @@ const Home = ({ user, loadingRooms }) => {
 
 Home.propTypes = {
 	user: PropTypes.object,
-	loadingRooms: PropTypes.bool
+	loadingHostedRooms: PropTypes.bool,
+	loadingPlayingRooms: PropTypes.bool
 }
 
 export default withFirebaseAuthentication(Home)

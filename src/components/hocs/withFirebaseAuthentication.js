@@ -27,15 +27,23 @@ export function withFirebaseAuthentication(Component) {
 		// Redirect to room if user is hosting a room
 		useEffect(() => {
 			if (user?.uid) {
-				rooms({
+				getUserHostedRooms({
 					variables: {
 						host: user?.uid
+					}
+				})
+
+				getUserPlayingRooms({
+					variables: {
+						playerUid: user?.uid
 					}
 				})
 			}
 		}, [user])
 		
-		const [rooms, { data: roomsData, loading: loadingRooms, error: roomsError}] = useLazyQuery(
+
+		/* Query to check if user is hosting a room */
+		const [getUserHostedRooms, { loading: loadingHostedRooms, error: roomsHostedError}] = useLazyQuery(
 			ROOMS, {
 				onCompleted: (data) => {
 					// check if hostedRoom exists to avoid subsequent updates to state
@@ -43,6 +51,22 @@ export function withFirebaseAuthentication(Component) {
 						setUser({
 							...user,
 							hostedRoom: data.rooms[0]
+						})
+					}
+				},
+				fetchPolicy: 'no-cache'
+			}
+		)
+
+		/* Query to check if user is already playing in a room */
+		const [getUserPlayingRooms, {loading: loadingPlayingRooms, error: roomsPlayingError}] = useLazyQuery(
+			ROOMS, {
+				onCompleted: (data) => {
+					// check if hostedRoom exists to avoid subsequent updates to state
+					if (!user.playingRoom && data.rooms.length > 0) {
+						setUser({
+							...user,
+							playingRoom: data.rooms[0]
 						})
 					}
 				},
@@ -68,7 +92,8 @@ export function withFirebaseAuthentication(Component) {
 					{...props}
 					signedIn={signedIn} 
 					signInLoading={loading}
-					loadingRooms={loadingRooms}
+					loadingHostedRooms={loadingHostedRooms}
+					loadingPlayingRooms={loadingPlayingRooms}
 					user={user}
 				/>
 			</>

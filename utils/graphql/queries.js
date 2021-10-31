@@ -1,8 +1,8 @@
 import gql from 'graphql-tag'
 
 export const ROOMS = gql`
-  query rooms($id: ID, $host: String, $slug: String) {
-    rooms(id: $id, host: $host, slug: $slug){
+  query rooms($id: ID, $host: String, $playerUid: ID, $slug: String) {
+    rooms(id: $id, host: $host, playerUid: $playerUid, slug: $slug){
       id
       host
       slug
