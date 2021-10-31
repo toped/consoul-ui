@@ -33,7 +33,7 @@ const NavbarLinks = [
 ]
 
 const _ = ({
-	page, fixed, signedIn, user, signInLoading, loadingRooms, ...props
+	page, fixed, signedIn, user, signInLoading, loadingRooms, loadingHostedRooms, loadingPlayingRooms, ...props
 }) => {
 
 	const {firebase} = useContext(FirebaseContext)
@@ -90,7 +90,9 @@ _.propTypes = {
 	signedIn: PropTypes.bool,
 	user: PropTypes.object,
 	signInLoading: PropTypes.bool,
-	loadingRooms: PropTypes.bool
+	loadingRooms: PropTypes.bool,
+	loadingHostedRooms: PropTypes.bool,
+	loadingPlayingRooms: PropTypes.bool
 }
 _.defaultProps = {
 	background: '#FFF',

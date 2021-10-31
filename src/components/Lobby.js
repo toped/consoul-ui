@@ -16,7 +16,7 @@ const RoomSettings = ({room}) => {
 	return (
 		<div className="my-4 text-center">
 			{
-				room?.settings && Object.keys(room.settings).map(settingKey => {
+				room?.settings && Object.keys(room?.settings).map(settingKey => {
 					return <Typography key={settingKey} variant="p">{settingKey}: {room?.settings[settingKey]}</Typography>
 				})
 			}
@@ -28,10 +28,10 @@ RoomSettings.propTypes = {
 	room: PropTypes.object
 }
 
-const Lobby = ({ user, room, subscribeToRoomUpdates }) => {
+const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 
 	useEffect(() => {
-		if (user?.uid && !room.players.map(p=>p.uid).includes(user.uid)) {
+		if (user?.uid && !room?.players.map(p=>p.uid).includes(user.uid)) {
 			addPlayer({
 				displayName: user.displayName,
 				email: user.email,
@@ -45,6 +45,7 @@ const Lobby = ({ user, room, subscribeToRoomUpdates }) => {
 	useEffect(() => {
 		console.log('subscribing to room updates')
 		subscribeToRoomUpdates()
+		subscribeToDeletion()
 	}, [])
 
 	const [updateRoomMutation] = useMutation(
@@ -62,7 +63,7 @@ const Lobby = ({ user, room, subscribeToRoomUpdates }) => {
 					room: {
 						...room,
 						players: [
-							...room.players,
+							...room?.players,
 							player
 						]
 					}
@@ -97,7 +98,7 @@ const Lobby = ({ user, room, subscribeToRoomUpdates }) => {
 		<FullPageDiv>
 			<Typography variant="h3" weight="bold" className="m-0">Wait here for others to join...</Typography>
 			<Typography variant="h5">The host will start the game soon.</Typography>
-			<PlayerList players={room.players} />
+			<PlayerList players={room?.players} />
 			<RoomSettings room={room} />
 			<Link to="/">
 				<Button className="mb-4" outline>Back to home</Button>
@@ -114,7 +115,8 @@ const Lobby = ({ user, room, subscribeToRoomUpdates }) => {
 Lobby.propTypes = {
 	room: PropTypes.object,
 	user: PropTypes.object,
-	subscribeToRoomUpdates: PropTypes.func
+	subscribeToRoomUpdates: PropTypes.func,
+	subscribeToDeletion: PropTypes.func
 }
 
 export default withFirebaseAuthentication(Lobby)

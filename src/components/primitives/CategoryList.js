@@ -35,7 +35,7 @@ const CategoryList = ({onGameTapped}) => {
 
 	const { data: games } = useQuery(CATEGORIES, {
 		onCompleted: (data) => {
-			console.log(data)
+			// console.log(data)
 		},
 		onError: (err) => {
 			console.error(err)
