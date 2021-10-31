@@ -78,7 +78,11 @@ const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
 					toaster.notify('Host reassigned!')
 				}
 				else if(JSON.stringify(prev.rooms[0].players) !== JSON.stringify(subscriptionData.data.roomUpdated.players)){
-					toaster.notify('Player joined!')
+					if (prev.rooms[0].players.length < subscriptionData.data.roomUpdated.players.length) {
+						toaster.notify('Player joined!')
+					} else {
+						toaster.warning('Player left!')
+					}
 				}
 			
 				return Object.assign({}, prev, {

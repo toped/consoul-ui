@@ -77,6 +77,22 @@ const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 		)
 	}
 
+	const removePlayer = (player) => {
+		updateRoomMutation(
+			{
+				variables: {
+					room: {
+						...room,
+						players: [
+							...room?.players.filter(p=>p.uid !== player.uid)
+						]
+					}
+				}
+			}
+		)
+	}
+
+
 	const [deleteRoomMutation, {loading: loadingRoomDeletion}] = useMutation(
 		DELETE_ROOM, {
 			onCompleted: (data) => {
@@ -110,8 +126,13 @@ const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 			</Link>
 			{
 				user?.uid === room?.host
-					? <Button className="mb-4" color='Crimson' outline onClick={deleteRoom} loading={loadingRoomDeletion}>End game</Button>
+					? <Button className="mb-4" color="MediumSeaGreen" outline>Start Game</Button>
 					: null
+			}
+			{
+				user?.uid === room?.host
+					? <Button className="mb-4" color='Crimson' outline onClick={deleteRoom} loading={loadingRoomDeletion}>End game</Button>
+					: <Button className="mb-4" color='Crimson' outline onClick={()=>removePlayer({uid:user?.uid})} loading={loadingRoomDeletion}>Leave game</Button>
 			}
 		</FullPageDiv>
 	)
