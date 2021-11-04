@@ -14,6 +14,7 @@ export const UPDATE_ROOM = gql`
     updateRoom(room: $room){
       id
       slug
+      started
     }
   }
 `

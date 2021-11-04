@@ -6,6 +6,7 @@ export const ROOM_SUBSCRIPTION = gql`
       id
       host
       slug
+      started
       players{
         displayName
         email
@@ -13,6 +14,16 @@ export const ROOM_SUBSCRIPTION = gql`
         phoneNumber
         uid
         isHost
+      }
+      game {
+        rounds
+        timeLimit
+        currentRound
+        currentTurn
+        countDownTime
+        roundTime
+        roundTimeElapsed
+        gameOver
       }
       settings {
         timeLimit

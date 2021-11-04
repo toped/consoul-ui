@@ -7,7 +7,10 @@ import { useTheme } from './ThemeProvider'
 
 const FooterWrapper = styled.div`
   font-size: .9rem;
-  background-color: ${({theme}) => theme.background};
+  background-color: ${({ theme }) => theme.background};
+	position: relative;
+	bottom: 0;
+	width: 100%;
 `
 function Footer() {
 	const [,setTheme] = useTheme()

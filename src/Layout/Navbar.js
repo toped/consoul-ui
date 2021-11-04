@@ -40,15 +40,7 @@ const NavbarLinks = [
 const _ = ({
 	page, fixed, signedIn, user, signInLoading, loadingRooms, loadingHostedRooms, loadingPlayingRooms, ...props
 }) => {
-
-	useEffect(() => {
-		console.log('useEffect user updated navbar-> ', {
-			playingRoom: user.playingRoom,
-			hostedRoom: user.hostedRoom
-		})
-	}, [user])
-		
-	
+			
 	const {firebase} = useContext(FirebaseContext)
 
 	/* Query to check if user is hosting a room */

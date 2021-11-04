@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import Badge from './Badge'
 
 const fontTypes = css`
+  font-family: ${({fontFamily}) => fontFamily || 'inherit'};
   position: relative;
   color: ${({theme, color, invertColor}) => 
 		color 
@@ -181,6 +182,7 @@ _.propTypes = {
 	badgeProps: PropTypes.object,
 	color: PropTypes.string,
 	invertColor: PropTypes.bool,
+	fontFamily: PropTypes.string
 }
 _.defaultProps = {
 	position: 'left'

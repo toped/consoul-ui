@@ -6,6 +6,7 @@ import { toaster } from 'evergreen-ui'
 
 import SEO from '../components/seo'
 import Lobby from '../components/Lobby'
+import GameRoom from '../components/GameRoom'
 import { Layout } from '../Layout'
 import { withFirebaseAuthentication } from '../components/hocs/withFirebaseAuthentication'
 import { ROOMS } from '../../utils/graphql/queries'
@@ -14,11 +15,23 @@ import { ROOM_SUBSCRIPTION, ROOM_DELETED_SUBSCRIPTION } from '../../utils/graphq
 const Content = ({room, subscribeToRoomUpdates, subscribeToDeletion}) => (
 	<>
 		<SEO title="Game" />
-		<Lobby
-			room={room}
-			subscribeToRoomUpdates={subscribeToRoomUpdates}
-			subscribeToDeletion={subscribeToDeletion}
-		/>
+		{
+			!room.started
+				?
+				// render lobby
+				<Lobby
+					room={room}
+					subscribeToRoomUpdates={subscribeToRoomUpdates}
+					subscribeToDeletion={subscribeToDeletion}
+				/>
+				:
+				// render game room
+				<GameRoom
+					room={room}
+					subscribeToRoomUpdates={subscribeToRoomUpdates}
+					subscribeToDeletion={subscribeToDeletion}
+				/>
+		}
 	</>
 )
 
@@ -37,7 +50,7 @@ const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
 			slug: props['*']
 		},
 		onCompleted: (data) => {
-			console.log('completed room fetch')
+			// console.log('completed room fetch')
 			if (data.rooms.length === 0) {
 				navigate('/lost') // should probably have a dedicated room not found page
 			}
@@ -70,7 +83,8 @@ const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
 			variables: { slug: props['*'] },
 			updateQuery: (prev, { subscriptionData }) => {
 
-				console.log(subscriptionData)
+				// console.log('room data changed')
+				// console.log(subscriptionData.data.roomUpdated.game)
 				if (!subscriptionData.data) return prev
 				
 				// check players

@@ -28,6 +28,8 @@ export const ThemedStyles = {
 		//Dynamic Colors - Your color pallette goes here
 		text: 'rgb(242,242,247)',
 		background: 'rgba(16, 16, 16, 1)',
+		stageLeft: 'rgba(32,33,36,1)',
+		stageRight: 'rgba(28,28,28,1)',
 		inverted_text: 'rgb(28,28,30)',
 		secondary: '#F6BD60',
 		primary: '#84A59D'
@@ -62,6 +64,8 @@ export const ThemedStyles = {
 		//Dynamic Colors - Your color pallette goes here
 		text: 'rgba(0,0,0,.8)',
 		background: 'rgb(242,242,247)',
+		stageLeft: 'rgba(255, 255, 255, 0.884)',
+		stageRight: 'rgb(242,242,247)',
 		inverted_text: 'rgb(242,242,247)',
 		secondary: '#F6BD60',
 		primary: '#84A59D'

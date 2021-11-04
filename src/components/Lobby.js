@@ -42,13 +42,13 @@ const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 				})
 		}
 		
-		if (user === null) {
+		if (user === null || !Object.keys(user).length) {
 			console.log('allow play as guest')
 		}
 	}, [user])
 
 	useEffect(() => {
-		console.log('subscribing to room updates')
+		console.log('lobby subscribing to room updates')
 		subscribeToRoomUpdates()
 		subscribeToDeletion()
 	}, [])
@@ -62,6 +62,8 @@ const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 	)
 
 	const addPlayer = (player) => {
+		console.log('mutating room from lobby')
+
 		updateRoomMutation(
 			{
 				variables: {
@@ -78,6 +80,8 @@ const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 	}
 
 	const removePlayer = (player) => {
+		console.log('mutating room from lobby')
+
 		updateRoomMutation(
 			{
 				variables: {
@@ -86,6 +90,21 @@ const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 						players: [
 							...room?.players.filter(p=>p.uid !== player.uid)
 						]
+					}
+				}
+			}
+		)
+	}
+
+	const startGame = () => {
+		console.log('mutating room from lobby')
+
+		updateRoomMutation(
+			{
+				variables: {
+					room: {
+						...room,
+						started: true
 					}
 				}
 			}
@@ -126,7 +145,7 @@ const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 			</Link>
 			{
 				user?.uid === room?.host
-					? <Button className="mb-4" color="MediumSeaGreen" outline>Start Game</Button>
+					? <Button className="mb-4" color="MediumSeaGreen" outline onClick={()=>startGame()}>Start Game</Button>
 					: null
 			}
 			{
