@@ -24,6 +24,10 @@ export const ROOMS = gql`
         roundTime
         roundTimeElapsed
         gameOver
+        cards {
+          user
+          text
+        }
       }
       settings {
         timeLimit

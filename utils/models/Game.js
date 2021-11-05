@@ -8,6 +8,7 @@ class Game {
 		countDownTime,
 		roundTime,
 		roundTimeElapsed,
+		cards,
 		gameOver
 	}) {
     
@@ -20,10 +21,11 @@ class Game {
 		}
 
 		this.players = players || []
+		this.cards = cards || []
 
 		this.rounds = rounds
 		this.timeLimit = timeLimit
-		this.gameOver = false
+		this.gameOver = gameOver || false
 
 		this.currentRound = currentRound || 1
 		this.currentTurn = currentTurn || 1

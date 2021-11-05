@@ -24,6 +24,10 @@ export const ROOM_SUBSCRIPTION = gql`
         roundTime
         roundTimeElapsed
         gameOver
+        cards {
+          user
+          text
+        }
       }
       settings {
         timeLimit

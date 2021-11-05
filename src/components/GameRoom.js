@@ -4,10 +4,10 @@ import { navigate } from 'gatsby'
 import { useMutation } from '@apollo/react-hooks'
 import { toaster } from 'evergreen-ui'
 
-import { FullPageDiv, GameStageLeft, GameStageRight, MemeFrame, CaptionInput } from '../components/styled-components'
-import { Typography, Countdown, Timer, LeaderboardList, CardSummary, TimesUp, Button } from './primitives'
+import { FullPageDiv, GameStageLeft, GameStageRight, MemeFrame } from '../components/styled-components'
+import { Typography, Countdown, Timer, LeaderboardList, CardSummary, TimesUp, Button, CaptionInput } from './primitives'
 import { formatters } from '../../utils/functions'
-import { Game } from '../../utils/models'
+import { Game, GameCard } from '../../utils/models'
 import { withFirebaseAuthentication } from './hocs/withFirebaseAuthentication'
 import { UPDATE_ROOM } from '../../utils/graphql/mutations'
 
@@ -95,6 +95,38 @@ const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribe
 			}
 		)
 	}
+
+
+	const submitCard = (text) => {
+		let cards = Object.assign([], game.cards || [])
+		cards.filter(c => c.uid !== user.uid)
+
+		const newCard = new GameCard({
+			user: user.uid,
+			text
+		})
+
+		console.log('the new card is: ', newCard)
+
+		cards.push(newCard)
+
+		const gameObj = new Game({
+			...game,
+			cards
+		})
+    
+		console.log('adding card')
+		updateRoomMutation(
+			{
+				variables: {
+					room: {
+						...room,
+						game: gameObj.toGraphQLModel
+					}
+				}
+			}
+		) 
+	}
   
 	return (
 		<FullPageDiv>
@@ -138,22 +170,14 @@ const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribe
 												</TimesUp>
 												{
 													room.host === user.uid
-										&& <Button className="mb-4" color="MediumSeaGreen" outline onClick={() => updateGameObject(true)}>Start Next Round</Button>
+													&& <Button className="mb-4" color="MediumSeaGreen" outline onClick={() => updateGameObject(true)}>Start Next Round</Button>
 												}
 											</>
 											:
-											<CaptionInput
-												onChange={(e) => {}}
-												className="my-4"
-												placeholder="Enter a caption"
-												type="text"
-												name="caption"
-												maxLength="25"
-												value={''}
-											/>
+											<CaptionInput submitCaption={(text) => submitCard(text)}/>
 									}
 						
-									<CardSummary players={room.players}/>
+									<CardSummary players={game?.players} cards={game?.cards}/>
 								</>
 								:<TimesUp>
 									<Typography variant="h3" weight="bold" fon className="m-0" fontFamily="Press_Start_2P">Game Over!!</Typography>
