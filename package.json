@@ -4,6 +4,10 @@
     "description": "Starter repository for a Gatsby site communicating with a GraphQL backend. This project uses Apollo Client to request and cache your data, as well as update your UI.",
     "version": "0.1.0",
     "author": "Tope Daramola <tope.daram@gmail.com>",
+    "engines": {
+        "npm": "please-use-yarn",
+        "yarn": ">= 1.22.17"
+    },
     "dependencies": {
         "@apollo/client": "^3.4.16",
         "@apollo/react-hooks": "^4.0.0",
