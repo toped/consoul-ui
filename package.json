@@ -6,7 +6,7 @@
     "author": "Tope Daramola <tope.daram@gmail.com>",
     "engines": {
         "npm": "please-use-yarn",
-        "yarn": ">= 1.22.17"
+        "yarn": ">= 1.22.10"
     },
     "dependencies": {
         "@apollo/client": "^3.4.16",
