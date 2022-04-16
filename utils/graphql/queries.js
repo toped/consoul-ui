@@ -27,6 +27,9 @@ export const ROOMS = gql`
         cards {
           user
           text
+          revealed
+          highlighted
+          selected
         }
       }
       settings {

@@ -40,7 +40,7 @@ const CaptionInput = ({ submitCaption }) => {
 				placeholder="Enter a caption"
 				type="text"
 				name="caption"
-				maxLength="25"
+				maxLength="140"
 				value={captionText}
 			/>
 			<Button className="mb-4" color="MediumSeaGreen" outline onClick={() => submitCaption(captionText)}>Submit caption</Button>

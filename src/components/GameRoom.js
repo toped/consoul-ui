@@ -99,14 +99,12 @@ const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribe
 
 	const submitCard = (text) => {
 		let cards = Object.assign([], game.cards || [])
-		cards.filter(c => c.uid !== user.uid)
+		cards = cards.filter(c => c.user !== user.uid)
 
 		const newCard = new GameCard({
 			user: user.uid,
 			text
 		})
-
-		console.log('the new card is: ', newCard)
 
 		cards.push(newCard)
 
@@ -115,7 +113,6 @@ const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribe
 			cards
 		})
     
-		console.log('adding card')
 		updateRoomMutation(
 			{
 				variables: {
@@ -127,6 +124,66 @@ const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribe
 			}
 		) 
 	}
+
+	const revealCard = (uid) => {
+		let cards = Object.assign([], game.cards)
+		cards = cards.map(c => (
+			c.user === uid
+				? {
+					...c,
+					revealed: true
+				}
+				: c
+		))
+
+		const gameObj = new Game({
+			...game,
+			cards
+		})
+    
+		updateRoomMutation(
+			{
+				variables: {
+					room: {
+						...room,
+						game: gameObj.toGraphQLModel
+					}
+				}
+			}
+		) 
+	}
+
+	const highlightCard = (uid) => {
+		let cards = Object.assign([], game.cards)
+		cards = cards.map(c => (
+			c.user === uid
+				? {
+					...c,
+					highlighted: true
+				}
+				: {
+					...c,
+					highlighted: false
+				}
+		))
+
+		const gameObj = new Game({
+			...game,
+			cards
+		})
+    
+		updateRoomMutation(
+			{
+				variables: {
+					room: {
+						...room,
+						game: gameObj.toGraphQLModel
+					}
+				}
+			}
+		) 
+	}
+
   
 	return (
 		<FullPageDiv>
@@ -169,15 +226,24 @@ const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribe
 													<Typography variant="h6" weight="bold" fon className="m-0" fontFamily="Press_Start_2P" color="red">Time is up!!</Typography>
 												</TimesUp>
 												{
-													room.host === user.uid
-													&& <Button className="mb-4" color="MediumSeaGreen" outline onClick={() => updateGameObject(true)}>Start Next Round</Button>
+													room?.host === user.uid
+														? <Button className="my-4" color="MediumSeaGreen" outline onClick={() => updateGameObject(true)}>Start Next Round</Button>
+														: <Typography className="my-4"  variant="tiny" weight="normal">Waiting for host to start the next round...</Typography>
 												}
 											</>
-											:
-											<CaptionInput submitCaption={(text) => submitCard(text)}/>
+											: game?.currentPlayer.uid === user.uid
+												? <Typography className="my-4"  variant="tiny" weight="normal"> Waiting for other players to submit a card...</Typography>
+												: <CaptionInput submitCaption={(text) => submitCard(text)}/>
 									}
 						
-									<CardSummary players={game?.players} cards={game?.cards}/>
+									<CardSummary
+										activePlayer={game?.currentPlayer}
+										isActivePlayer={game?.currentPlayer.uid === user.uid}
+										players={game?.players}
+										cards={game?.cards}
+										revealCard={(uid) => revealCard(uid)}
+										highlightCard={(uid) => highlightCard(uid)}
+									/>
 								</>
 								:<TimesUp>
 									<Typography variant="h3" weight="bold" fon className="m-0" fontFamily="Press_Start_2P">Game Over!!</Typography>

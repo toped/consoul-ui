@@ -12,6 +12,8 @@ class GameCard {
 		this.user = user
 		this.text = text
 		this.revealed = false
+		this.highlighted = false
+		this.selected = false
 	}
   
 	revealCard() {

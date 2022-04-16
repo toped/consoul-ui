@@ -27,6 +27,9 @@ export const ROOM_SUBSCRIPTION = gql`
         cards {
           user
           text
+          revealed
+          highlighted
+          selected
         }
       }
       settings {
