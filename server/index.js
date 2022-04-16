@@ -15,6 +15,6 @@ app.use('/', express.static(path.join(__dirname, '../public')))
 app.get('*', (_req, res) => { res.sendFile(path.join(__dirname, '../public', 'index.html'))})
 console.warn(`> 💻  UI ready on ${process.env.URL}`)
 
-app.listen('8000', (err) => {
+app.listen('8080', (err) => {
 	if (err) throw err
 })
