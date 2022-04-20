@@ -21,6 +21,7 @@ env:
   GATSBY_MEASUREMENT_ID: secrets.GATSBY_MEASUREMENT_ID
   GATSBY_URL: secrets.GATSBY_URL
   GATSBY_URL_WS: secrets.GATSBY_URL_WS
+  GATSBY_NODE_ENV: secrets.GATSBY_NODE_ENV
 
 jobs:
   build_and_deploy_job:
