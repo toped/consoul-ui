@@ -1,9 +1,9 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { navigate } from 'gatsby'
 import { Spinner } from 'evergreen-ui'
 import { FirebaseContext } from './Firebase'
-import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
+import Link from 'gatsby-link'
 
 import { withFirebaseAuthentication } from './hocs/withFirebaseAuthentication'
 import { FullPageDiv } from '../components/styled-components/FullPageDiv'
@@ -33,9 +33,46 @@ const LoginCard = styled.div`
     color: #7a6526 !important;
   }
 `
+const StyledFirebaseAuth = styled.div`
+	.login {
+		height: 100vh;
+		width: 100vw;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.login__container {
+		display: flex;
+		flex-direction: column;
+		text-align: center;
+		background-color: #dcdcdc;
+		padding: 30px;
+	}
+	.login__textBox {
+		padding: 10px;
+		font-size: 18px;
+		margin-bottom: 10px;
+	}
+	.login__btn {
+		padding: 10px;
+		font-size: 18px;
+		margin-bottom: 10px;
+		border: none;
+		color: white;
+		background-color: black;
+	}
+	.login__google {
+		background-color: #4285f4;
+	}
+	.login div {
+		margin-top: 7px;
+	}
+`
 const Login = ({ signedIn }) => {
 
-	const {firebase, uiConfig} = useContext(FirebaseContext)
+	const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+	const { firebase } = useContext(FirebaseContext)
 	const cookiesEnabled = () => {
 		if (typeof window !== 'undefined') {
 			var cookieEnabled = window.navigator.cookieEnabled
@@ -47,6 +84,10 @@ const Login = ({ signedIn }) => {
 		return cookieEnabled
 	}
 
+	useEffect(()=> {
+		console.log(firebase)
+	},[firebase])
+
 	useEffect(() => {
 		if (signedIn) {
 			navigate('/')
@@ -57,8 +98,42 @@ const Login = ({ signedIn }) => {
 		return (
 			<>
 				{
-					firebase 
-						? <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={firebase.auth}/>
+					firebase != null
+						? <StyledFirebaseAuth>
+							<div className="login">
+								<div className="login__container">
+									<input
+									type="text"
+									className="login__textBox"
+									value={email}
+									onChange={(e) => setEmail(e.target.value)}
+									placeholder="E-mail Address"
+									/>
+									<input
+									type="password"
+									className="login__textBox"
+									value={password}
+									onChange={(e) => setPassword(e.target.value)}
+									placeholder="Password"
+									/>
+									<button
+									className="login__btn"
+									onClick={() => firebase?.signInWithEmailAndPassword(email, password)}
+									>
+									Login
+									</button>
+									<button className="login__btn login__google" onClick={() => firebase?.signInWithGoogle()}>
+									Login with Google
+									</button>
+									<div>
+									<Link to="/reset">Forgot Password</Link>
+									</div>
+									<div>
+									Don't have an account? <Link to="/register">Register</Link> now.
+									</div>
+								</div>
+							</div>
+						  </StyledFirebaseAuth>
 						: <Spinner size={24}/>
 				}
 			</>

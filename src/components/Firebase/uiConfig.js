@@ -1,4 +1,4 @@
-export const uiConfig = (firebase) => {
+export const uiConfig = (auth) => {
 	return {
 	// Popup signin flow rather than redirect flow.
 		signInFlow: 'popup',
@@ -36,15 +36,15 @@ export const uiConfig = (firebase) => {
 		signInOptions: [
 		// Leave the lines as is for the providers you want to offer your users.
 			{
-				provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+				provider: auth.EmailAuthProvider.PROVIDER_ID,
 				// Whether the display name should be displayed in the Sign Up page.
 				requireDisplayName: true
 			},
-			firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-			// firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-			// firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+			auth.GoogleAuthProvider.PROVIDER_ID,
+			// auth.FacebookAuthProvider.PROVIDER_ID,
+			// auth.TwitterAuthProvider.PROVIDER_ID,
 			// {
-			// 	provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+			// 	provider: auth.PhoneAuthProvider.PROVIDER_ID,
 			// 	// Invisible reCAPTCHA with image challenge and bottom left badge.
 			// 	recaptchaParameters: {
 			// 		type: 'image',
@@ -54,7 +54,7 @@ export const uiConfig = (firebase) => {
 			// }
 		],
 		// Set to true if you only have a single federated provider like
-		// firebase.auth.GoogleAuthProvider.PROVIDER_ID and you would like to
+		// auth.GoogleAuthProvider.PROVIDER_ID and you would like to
 		// immediately redirect to the provider's site instead of showing a
 		// 'Sign in with Provider' button first. In order for this to take
 		// effect, the signInFlow option must also be set to 'redirect'.

@@ -1,31 +1,22 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Firebase from './firebase'
-import { uiConfig } from './uiConfig'
+import { uiConfig as firebaseUIConfig } from './uiConfig'
 
 const FirebaseContext = React.createContext({})
 
 const FirebaseContextProvider = ({children}) => {
 	const [firebase, setFirebase] = useState(null)
-	const [app, setApp] = useState(null)
 	
 	useEffect(() => {
-		const app = require('firebase/app')
-
-		require('firebase/auth')
-		require('firebase/database')
-		require('firebase/storage')
-		const firebase = new Firebase(app)
-
-		setApp(app)
+		const firebase = new Firebase()
 		setFirebase(firebase)
 	}, [])
 
 	return (
 		<FirebaseContext.Provider value={
 			{
-				firebase,
-				uiConfig: app ? uiConfig(app) : null
+				firebase
 			}
 		}>
 			{children}
