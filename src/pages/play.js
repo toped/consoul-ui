@@ -1,5 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Router } from "@reach/router";
+
 import { navigate } from 'gatsby'
 import { useQuery } from '@apollo/react-hooks'
 import { toaster } from 'evergreen-ui'
@@ -7,47 +9,17 @@ import { toaster } from 'evergreen-ui'
 import SEO from '../components/seo'
 import Lobby from '../components/Lobby'
 import GameRoom from '../components/GameRoom'
+import Lost from '../components/Lost'
 import { Layout } from '../Layout'
 import { withFirebaseAuthentication } from '../components/hocs/withFirebaseAuthentication'
 import { ROOMS } from '../../utils/graphql/queries'
 import { ROOM_SUBSCRIPTION, ROOM_DELETED_SUBSCRIPTION } from '../../utils/graphql/subscriptions'
 
-const Content = ({room, subscribeToRoomUpdates, subscribeToDeletion}) => (
-	<>
-		<SEO title="Game" />
-		{
-			!room.started
-				?
-				// render lobby
-				<Lobby
-					room={room}
-					subscribeToRoomUpdates={subscribeToRoomUpdates}
-					subscribeToDeletion={subscribeToDeletion}
-				/>
-				:
-				// render game room
-				<GameRoom
-					room={room}
-					subscribeToRoomUpdates={subscribeToRoomUpdates}
-					subscribeToDeletion={subscribeToDeletion}
-				/>
-		}
-	</>
-)
 
-Content.propTypes = {
-	room: PropTypes.object,
-	subscribeToRoomUpdates: PropTypes.func,
-	subscribeToDeletion: PropTypes.func
-}
-
-
-const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
-	if (props['*'] === '') navigate('/lost')
-
+const Content = ({slug}) => {
 	const {subscribeToMore,  data: roomData, loading: loadingRoom } = useQuery(ROOMS, {
 		variables: {
-			slug: props['*']
+			slug
 		},
 		onCompleted: (data) => {
 			// console.log('completed room fetch')
@@ -64,7 +36,7 @@ const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
 	const subscribeToDeletion = () => {
 		subscribeToMore({
 			document: ROOM_DELETED_SUBSCRIPTION,
-			variables: { slug: props['*'] },
+			variables: { slug },
 			updateQuery: (prev) => {
 				
 				navigate('/') 
@@ -80,7 +52,7 @@ const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
 	const subscribeToRoomUpdates = () =>
 		subscribeToMore({
 			document: ROOM_SUBSCRIPTION,
-			variables: { slug: props['*'] },
+			variables: { slug },
 			updateQuery: (prev, { subscriptionData }) => {
 
 				// console.log('room data changed')
@@ -103,20 +75,51 @@ const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
 					rooms: [subscriptionData.data.roomUpdated]
 				})
 			}
-		})
+	})
+	return(
+		<>
+			<SEO title="Game" />
+			{
+				!loadingRoom && Array.isArray(roomData?.rooms) && roomData?.rooms.length ? 
+					!roomData.rooms[0].started
+						?
+						// render lobby
+						<Lobby
+							room={roomData.rooms[0]}
+							subscribeToRoomUpdates={subscribeToRoomUpdates}
+							subscribeToDeletion={subscribeToDeletion}
+						/>
+						:
+						// render game room
+						<GameRoom
+							room={roomData.rooms[0]}
+							subscribeToRoomUpdates={subscribeToRoomUpdates}
+							subscribeToDeletion={subscribeToDeletion}
+						/>
+					: null
+			}
+		</>
+	)
+}
+
+Content.propTypes = {
+	room: PropTypes.object,
+	subscribeToRoomUpdates: PropTypes.func,
+	subscribeToDeletion: PropTypes.func
+}
+
+
+const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {	
 
 	return (
 		<Layout
 			title="Game"
 			content={
-				!loadingRoom && Array.isArray(roomData?.rooms) && roomData?.rooms.length
-					? <Content
-						room={roomData.rooms[0]}
-						subscribeToRoomUpdates={subscribeToRoomUpdates}
-						subscribeToDeletion={subscribeToDeletion}
-					/>
-					: null}
-			isLoading={loadingRoom}
+				<Router>
+					<Lost path="/play/"/>
+					<Content path="/play/:slug"/>
+				</Router>
+				}
 		/>
 	)
 }
