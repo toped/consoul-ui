@@ -1,7 +1,9 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client'
 import { split, HttpLink } from '@apollo/client'
 import { getMainDefinition } from '@apollo/client/utilities'
-import { WebSocketLink } from '@apollo/client/link/ws'
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
+
 import fetch from 'isomorphic-fetch'
 import config from './config.js'
 
@@ -10,12 +12,11 @@ const httpLink = new HttpLink({
 	fetch
 })
 
-const wsLink = typeof window !== 'undefined' ? new WebSocketLink({
-	uri: config['ws'][process.env.GATSBY_NODE_ENV],
-	options: {
-		reconnect: true
-	},
-}): null
+const wsLink = typeof window !== 'undefined' ? new GraphQLWsLink(
+	createClient({
+		url: config['ws'][process.env.GATSBY_NODE_ENV],
+	}),
+): null
 
 // The split function takes three parameters:
 //
@@ -27,7 +28,7 @@ const splitLink = typeof window !== 'undefined' ? split(
 		const definition = getMainDefinition(query)
 		return (
 			definition.kind === 'OperationDefinition' &&
-      definition.operation === 'subscription'
+      		definition.operation === 'subscription'
 		)
 	},
 	wsLink,
