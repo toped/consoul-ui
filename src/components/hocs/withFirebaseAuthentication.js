@@ -47,7 +47,7 @@ export function withFirebaseAuthentication(Component) {
 			ROOMS, {
 				onCompleted: (data) => {
 					// check if hostedRoom exists to avoid subsequent updates to state
-					if (!user.hostedRoom && data.rooms.length > 0) {
+					if (!user.hostedRoom && data.rooms?.length > 0) {
 						setUser(prev => {
 							return {
 								...prev,
@@ -65,7 +65,7 @@ export function withFirebaseAuthentication(Component) {
 			ROOMS, {
 				onCompleted: (data) => {
 				// check if hostedRoom exists to avoid subsequent updates to state
-					if (!user.playingRoom && data.rooms.length > 0) {
+					if (!user.playingRoom && data.rooms?.length > 0) {
 						setUser(prev => {
 							return {
 								...prev,
