@@ -8,16 +8,17 @@ import { toaster } from 'evergreen-ui'
 import CategoryList from './primitives/CategoryList'
 import { FullPageDiv } from '../components/styled-components/FullPageDiv'
 import { Typography, SegmentedControl, Button } from './primitives'
-import { withFirebaseAuthentication } from './hocs/withFirebaseAuthentication'
 import { formatters } from '../../utils/functions'
 import { CREATE_ROOM } from '../../utils/graphql/mutations'
+import { useUser } from './Context/UserProvider'
 
-const Setup = ({user}) => {
+const Setup = () => {
 
 	const [rounds, setRounds] = useState(5)
 	const [timeLimit, setTimeLimit] = useState(30)
 	const [maxPlayers, setMaxPlayers] = useState(5)
-
+	const {user} = useUser()
+	
 	const [createRoomMutation, {loading: loadingRoomCreation}] = useMutation(
 		CREATE_ROOM, {
 			onCompleted: (data) => {
@@ -49,13 +50,13 @@ const Setup = ({user}) => {
 
 	const { setupMeme } = useStaticQuery(graphql`
 		query {
-      setupMeme: file(name: {eq: "setup-image"}) {
-        childImageSharp {
-          fluid(quality: 100) {
-            ...GatsbyImageSharpFluid_withWebp
-          }
-        }
-      }
+			setupMeme: file(name: {eq: "setup-image"}) {
+				childImageSharp {
+					fluid(quality: 100) {
+						...GatsbyImageSharpFluid_withWebp
+					}
+				}
+			}
 		}
 	`)
 
@@ -124,4 +125,4 @@ Setup.propTypes = {
 	user: PropTypes.object
 }
 
-export default withFirebaseAuthentication(Setup)
+export default Setup

@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { navigate } from 'gatsby'
 import { Spinner } from 'evergreen-ui'
-import { FirebaseContext } from './Firebase'
+import { useFirebase } from './Context/FirebaseProvider'
 import Link from 'gatsby-link'
 
-import { withFirebaseAuthentication } from './hocs/withFirebaseAuthentication'
 import { FullPageDiv } from '../components/styled-components/FullPageDiv'
 import { Typography } from './primitives'
 import styled from 'styled-components'
+import { useUser } from './Context/UserProvider'
 
 const Wrapper = styled.div`
   display: flex;
@@ -68,11 +68,13 @@ const StyledFirebaseAuth = styled.div`
 		margin-top: 7px;
 	}
 `
-const Login = ({ signedIn }) => {
+const Login = () => {
 
 	const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-	const { firebase } = useContext(FirebaseContext)
+	const { firebase } = useFirebase()
+	const {user} = useUser()
+	
 	const cookiesEnabled = () => {
 		if (typeof window !== 'undefined') {
 			var cookieEnabled = window.navigator.cookieEnabled
@@ -84,15 +86,12 @@ const Login = ({ signedIn }) => {
 		return cookieEnabled
 	}
 
-	useEffect(()=> {
-		console.log(firebase)
-	},[firebase])
 
 	useEffect(() => {
-		if (signedIn) {
+		if (user.signedIn) {
 			navigate('/')
 		}
-	}, [signedIn])
+	}, [user])
 	
 	const LoginForm = () => {
 		return (
@@ -169,7 +168,7 @@ const Login = ({ signedIn }) => {
 Login.propTypes = {
 	firebase: PropTypes.object,
 	firebaseUIConfig: PropTypes.object,
-	signedIn: PropTypes.bool,
+	user: PropTypes.object,
 }
 
-export default withFirebaseAuthentication(Login)
+export default Login

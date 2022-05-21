@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, createContext, useContext } from 'react'
 import PropTypes from 'prop-types'
-import Firebase from './firebase'
-import { uiConfig as firebaseUIConfig } from './uiConfig'
+import Firebase from '../../models/Firebase'
 
-const FirebaseContext = React.createContext({})
+const FirebaseContext = createContext({})
+
+const useFirebase = () => (useContext(FirebaseContext))
 
 const FirebaseContextProvider = ({children}) => {
 	const [firebase, setFirebase] = useState(null)
@@ -14,11 +15,7 @@ const FirebaseContextProvider = ({children}) => {
 	}, [])
 
 	return (
-		<FirebaseContext.Provider value={
-			{
-				firebase
-			}
-		}>
+		<FirebaseContext.Provider value={{firebase}}>
 			{children}
 		</FirebaseContext.Provider>
 	)
@@ -28,4 +25,4 @@ FirebaseContextProvider.propTypes = {
 	children: PropTypes.object
 }
 
-export { FirebaseContext, FirebaseContextProvider }
+export { FirebaseContextProvider, useFirebase }

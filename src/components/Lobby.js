@@ -8,8 +8,8 @@ import { toaster } from 'evergreen-ui'
 import { FullPageDiv } from '../components/styled-components/FullPageDiv'
 import { Typography, Button, PlayerList } from './primitives'
 import { formatters } from '../../utils/functions'
-import { withFirebaseAuthentication } from './hocs/withFirebaseAuthentication'
 import { DELETE_ROOM, UPDATE_ROOM } from '../../utils/graphql/mutations'
+import { useUser } from './Context/UserProvider'
 
 const RoomSettings = ({room}) => {
 
@@ -28,8 +28,10 @@ RoomSettings.propTypes = {
 	room: PropTypes.object
 }
 
-const Lobby = ({ user, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
+const Lobby = ({ room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 
+	const {user} = useUser()
+	
 	useEffect(() => {
 		if (user?.uid && !room?.players.map(p => p.uid).includes(user.uid)) {
 			if(room?.players.length < room?.settings.maxPlayers)
@@ -164,4 +166,4 @@ Lobby.propTypes = {
 	subscribeToDeletion: PropTypes.func
 }
 
-export default withFirebaseAuthentication(Lobby)
+export default Lobby

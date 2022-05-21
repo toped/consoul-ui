@@ -19,7 +19,7 @@ import {
 } from "firebase/firestore";
 	
 
-const config = require('../../../firebaseConfig')
+const config = require('../../firebaseConfig')
 
 class Firebase {
 	constructor() {
@@ -30,7 +30,7 @@ class Firebase {
 	}	
 
 	doSignOut() {
-		signOut()
+		signOut(this.auth)
 	}
 
 	async signInWithGoogle() {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import Link from 'gatsby-link'
@@ -6,10 +6,10 @@ import { useMutation, useLazyQuery } from '@apollo/react-hooks'
 import { toaster } from 'evergreen-ui'
 import { navigate } from 'gatsby'
 import { Navbar, Alignment } from '@blueprintjs/core'
-import { FirebaseContext } from '../components/Firebase'
+import { useFirebase } from '../components/Context/FirebaseProvider'
+import { useUser } from '../components/Context/UserProvider'
 
 import { Typography, OnlineCircle } from '../components/primitives'
-import { withFirebaseAuthentication } from '../components/hocs/withFirebaseAuthentication'
 import { formatters } from '../../utils/functions'
 import { DELETE_ROOM, UPDATE_ROOM } from '../../utils/graphql/mutations'
 import { ROOMS } from '../../utils/graphql/queries'
@@ -38,10 +38,11 @@ const NavbarLinks = [
 ]
 
 const _ = ({
-	page, fixed, signedIn, user, signInLoading, loadingRooms, loadingHostedRooms, loadingPlayingRooms, ...props
+	page, fixed, loadingRooms, loadingHostedRooms, loadingPlayingRooms, ...props
 }) => {
 			
-	const {firebase} = useContext(FirebaseContext)
+	const {firebase} = useFirebase()
+	const {user} = useUser()
 
 	/* Query to check if user is hosting a room */
 	const [getUserHostedRooms] = useLazyQuery(
@@ -194,8 +195,8 @@ const _ = ({
 						))
 					}
 				</NavLinks>
-				<Typography variant="body" className="px-2 m-0 cursor-pointer" weight="normal" onClick={() => ( signedIn ? logOut() : navigate('/login') )}>
-					{ signedIn ? 'Logout' : 'Login' }
+				<Typography variant="body" className="px-2 m-0 cursor-pointer" weight="normal" onClick={() => ( user.signedIn ? logOut() : navigate('/login') )}>
+					{ user.signedIn ? 'Logout' : 'Login' }
 				</Typography>
 				{
 					user && user.displayName
@@ -217,7 +218,6 @@ _.propTypes = {
 	fixed: PropTypes.bool,
 	background: PropTypes.string,
 	boxshadow: PropTypes.string,
-	signedIn: PropTypes.bool,
 	user: PropTypes.object,
 	signInLoading: PropTypes.bool,
 	loadingRooms: PropTypes.bool,
@@ -229,4 +229,4 @@ _.defaultProps = {
 	boxshadow: '0 0 0 1px rgba(16, 22, 26, 0.1), 0 0 0 rgba(16, 22, 26, 0), 0 1px 1px rgba(16, 22, 26, 0.1);'
 }
 
-export default withFirebaseAuthentication(_)
+export default _

@@ -8,13 +8,13 @@ import { FullPageDiv, GameStageLeft, GameStageRight, MemeFrame } from '../compon
 import { Typography, Countdown, Timer, LeaderboardList, CardSummary, TimesUp, Button, CaptionInput } from './primitives'
 import { formatters } from '../../utils/functions'
 import { Game, GameCard } from '../../utils/models'
-import { withFirebaseAuthentication } from './hocs/withFirebaseAuthentication'
 import { UPDATE_ROOM } from '../../utils/graphql/mutations'
+import { useUser } from './Context/UserProvider'
 
-const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribeToDeletion }) => {
+const GameRoom = ({ room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 
 	const [game, setGame] = useState(null)
-
+	const {user} = useUser()
 	useEffect(() => {
 		console.log('lobby subscribing to room updates')
 		subscribeToRoomUpdates()
@@ -26,7 +26,7 @@ const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribe
 			navigate('/lost')
 		}
 		
-		if (!signInLoading && !Object.keys(user).length) {
+		if (!Object.keys(user).length) {
 			navigate('/lost')
 		}
     
@@ -270,9 +270,8 @@ const GameRoom = ({ user, signInLoading, room, subscribeToRoomUpdates, subscribe
 GameRoom.propTypes = {
 	room: PropTypes.object,
 	user: PropTypes.object,
-	signInLoading: PropTypes.bool,
 	subscribeToRoomUpdates: PropTypes.func,
 	subscribeToDeletion: PropTypes.func
 }
 
-export default withFirebaseAuthentication(GameRoom)
+export default GameRoom

@@ -1,4 +1,6 @@
 import React from 'react'
+import { useUser } from '../components/Context/UserProvider'
+import withAuthentication from '../components/hocs/withAuthentication'
 
 import SEO from '../components/seo'
 import Setup from '../components/Setup'
@@ -12,11 +14,15 @@ const Content = () => (
 )
 
 
-const SetupPage = () => ( 
-	<Layout
-		title="Setup"
-		content={<Content/>}
-	/>
-)
+const SetupPage = () => {
+	const { user } = useUser()
 
-export default SetupPage
+	return(
+		<Layout
+			title="Setup"
+			content={<Content/>}
+		/>
+	)
+}
+
+export default withAuthentication(SetupPage)

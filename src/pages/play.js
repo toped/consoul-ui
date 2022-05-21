@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Router } from "@reach/router";
+import withAuthentication from '../components/hocs/withAuthentication'
 
 import { navigate } from 'gatsby'
 import { useQuery } from '@apollo/react-hooks'
@@ -11,9 +12,9 @@ import Lobby from '../components/Lobby'
 import GameRoom from '../components/GameRoom'
 import Lost from '../components/Lost'
 import { Layout } from '../Layout'
-import { withFirebaseAuthentication } from '../components/hocs/withFirebaseAuthentication'
 import { ROOMS } from '../../utils/graphql/queries'
 import { ROOM_SUBSCRIPTION, ROOM_DELETED_SUBSCRIPTION } from '../../utils/graphql/subscriptions'
+import { useUser } from '../components/Context/UserProvider';
 
 
 const Content = ({slug}) => {
@@ -38,7 +39,6 @@ const Content = ({slug}) => {
 			document: ROOM_DELETED_SUBSCRIPTION,
 			variables: { slug },
 			updateQuery: (prev) => {
-				
 				navigate('/') 
 				toaster.danger('Game room closed!')
 
@@ -109,7 +109,9 @@ Content.propTypes = {
 }
 
 
-const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {	
+const GamePage = () => {	
+
+	const { user } = useUser()
 
 	return (
 		<Layout
@@ -120,16 +122,13 @@ const GamePage = ({ user, signedIn, signInLoading, setUser, ...props }) => {
 					<Content path="/play/:slug"/>
 				</Router>
 				}
+			loading={user.loading}
 		/>
 	)
 }
 
 GamePage.propTypes = {
-	'*': PropTypes.string,
-	user: PropTypes.object,
-	signedIn: PropTypes.bool,
-	signInLoading: PropTypes.bool,
-	setUser: PropTypes.func
+
 }
 
-export default withFirebaseAuthentication(GamePage)
+export default withAuthentication(GamePage)
