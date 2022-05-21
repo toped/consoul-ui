@@ -7,9 +7,8 @@ import { Typography, Button } from './primitives'
 import { useUser } from './Context/UserProvider'
 
 const Home = () => {
-
 	useEffect(()=> {
-		getUserRoomData()
+		getUserRoomData(user?.uid)
 	},[])
 
 	const {user, getUserRoomData, loadingHostedRooms, loadingPlayingRooms} = useUser()

@@ -27,6 +27,7 @@ const UserContextProvider = ({children}) => {
 					if(!user?.signedIn) {
 						console.log('user not signed in... updating')
 						setUser(new User(user))
+						getUserRoomData(user.uid)
 					}else {
 						console.log('user already signed in... not updating')
 					}
@@ -35,25 +36,17 @@ const UserContextProvider = ({children}) => {
 		} 
 	}, [firebase])
 
-	// Redirect to room if user is hosting a room
-	useEffect(() => {
-		if (user?.uid) {
-			console.log('Getting room data')
-			getUserRoomData()
-		}
-	}, [user])
-	
-
-	const getUserRoomData = () => {
+	/* Side effect of getUserRoomData is that user state is modified */
+	const getUserRoomData = (uid) => {
 		getUserHostedRooms({
 			variables: {
-				host: user?.uid
+				host: uid
 			}
 		})
 
 		getUserPlayingRooms({
 			variables: {
-				playerUid: user?.uid
+				playerUid: uid
 			}
 		})
 	}
@@ -62,9 +55,7 @@ const UserContextProvider = ({children}) => {
 	const [getUserHostedRooms, { loading: loadingHostedRooms, error: roomsHostedError}] = useLazyQuery(
 		ROOMS, {
 			onCompleted: (data) => {
-				console.log('refetch completed test')
-				// check if hostedRoom exists to avoid subsequent updates to state
-				if (!user.hostedRoom && data.rooms?.length > 0) {
+				if (data.rooms?.length > 0) {
 					console.log('updating hosted room')
 					setUser(prev => {
 						return {
@@ -90,8 +81,7 @@ const UserContextProvider = ({children}) => {
 	const [getUserPlayingRooms, {loading: loadingPlayingRooms, error: roomsPlayingError}] = useLazyQuery(
 		ROOMS, {
 			onCompleted: (data) => {
-			// check if hostedRoom exists to avoid subsequent updates to state
-				if (!user.playingRoom && data.rooms?.length > 0) {
+				if (data.rooms?.length > 0) {
 					console.log('updating playing room')
 					setUser(prev => {
 						return {
