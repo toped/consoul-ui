@@ -2,7 +2,6 @@ import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import  Link from 'gatsby-link'
 
-import { FullPageDiv } from '../components/styled-components/FullPageDiv'
 import { Typography, Button } from './primitives'
 import { useUser } from './Context/UserProvider'
 
@@ -14,13 +13,13 @@ const Home = () => {
 	const {user, getUserRoomData, loadingHostedRooms, loadingPlayingRooms} = useUser()
 	
 	return (
-		<FullPageDiv>
+		<>
 			<Typography variant="h3">What you Meme?</Typography>
 			{
 				user?.playingRoom
 					?
 					<Link to={`/play/${user.playingRoom.slug}`}>
-						<Button className="mb-4" loading={loadingHostedRooms} color="MediumSeaGreen" outline>Re-join Current Game</Button>
+						<Button className="mb-4" loading={loadingPlayingRooms} color="MediumSeaGreen" outline>Re-join Current Game</Button>
 					</Link>
 					:
 					<Link to="/join">
@@ -42,7 +41,7 @@ const Home = () => {
 			<Link to="/rules">
 				<Button secondary outline>How to Play</Button>
 			</Link>
-		</FullPageDiv>
+		</>
 	)
 }
 

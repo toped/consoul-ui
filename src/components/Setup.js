@@ -6,7 +6,6 @@ import { useMutation } from '@apollo/react-hooks'
 import { toaster } from 'evergreen-ui'
 
 import CategoryList from './primitives/CategoryList'
-import { FullPageDiv } from '../components/styled-components/FullPageDiv'
 import { Typography, SegmentedControl, Button } from './primitives'
 import { formatters } from '../../utils/functions'
 import { CREATE_ROOM } from '../../utils/graphql/mutations'
@@ -61,7 +60,7 @@ const Setup = () => {
 	`)
 
 	return (
-		<FullPageDiv>
+		<>
 			<div className="flex flex-col items-center p-4">
 				<Typography variant="h4" weight="bold">Game Setup</Typography>
 				<img src={setupMeme.childImageSharp.fluid.src} className="w-full md:w-1/2" alt="" />
@@ -117,7 +116,7 @@ const Setup = () => {
 					</div>
 				</div>				
 			</div>
-		</FullPageDiv>
+		</>
 	)
 }
 

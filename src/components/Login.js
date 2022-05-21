@@ -5,16 +5,15 @@ import { Spinner } from 'evergreen-ui'
 import { useFirebase } from './Context/FirebaseProvider'
 import Link from 'gatsby-link'
 
-import { FullPageDiv } from '../components/styled-components/FullPageDiv'
 import { Typography } from './primitives'
 import styled from 'styled-components'
 import { useUser } from './Context/UserProvider'
 
 const Wrapper = styled.div`
-  display: flex;
+  	display: flex;
 	flex-direction: column;
-  justify-content: center;
-  align-items: center;
+	justify-content: center;
+	align-items: center;
 `
 const LoginCard = styled.div`
   border-radius: 5px !important;
@@ -149,19 +148,17 @@ const Login = () => {
 	}
 
 	return (
-		<FullPageDiv>
-			<Wrapper>
-				<LoginCard>
-					{
-						cookiesEnabled()
-							? <LoginForm/>
-							: typeof window !== 'undefined'
-								? <CookieMessage/>
-								: <Spinner size={24}/>
-					}
-				</LoginCard>
-			</Wrapper>
-		</FullPageDiv>
+		<Wrapper>
+			<LoginCard>
+				{
+					cookiesEnabled()
+						? <LoginForm/>
+						: typeof window !== 'undefined'
+							? <CookieMessage/>
+							: <Spinner size={24}/>
+				}
+			</LoginCard>
+		</Wrapper>
 	)
 }
 

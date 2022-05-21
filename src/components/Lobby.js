@@ -5,7 +5,6 @@ import { useMutation } from '@apollo/react-hooks'
 import { navigate } from 'gatsby'
 import { toaster } from 'evergreen-ui'
 
-import { FullPageDiv } from '../components/styled-components/FullPageDiv'
 import { Typography, Button, PlayerList } from './primitives'
 import { formatters } from '../../utils/functions'
 import { DELETE_ROOM, UPDATE_ROOM } from '../../utils/graphql/mutations'
@@ -137,7 +136,7 @@ const Lobby = ({ room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 	}
 
 	return (
-		<FullPageDiv>
+		<>
 			<Typography variant="h3" weight="bold" className="m-0">Wait here for others to join...</Typography>
 			<Typography variant="h5">The host will start the game soon.</Typography>
 			<PlayerList players={room?.players} />
@@ -155,7 +154,7 @@ const Lobby = ({ room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 					? <Button className="mb-4" color='Crimson' outline onClick={deleteRoom} loading={loadingRoomDeletion}>End game</Button>
 					: <Button className="mb-4" color='Crimson' outline onClick={()=>removePlayer({uid:user?.uid})} loading={loadingRoomDeletion}>Leave game</Button>
 			}
-		</FullPageDiv>
+		</>
 	)
 }
 

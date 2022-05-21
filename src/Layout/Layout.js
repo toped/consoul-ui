@@ -10,6 +10,7 @@ import SEO from '../components/seo'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import { LoadingMessages } from '../../utils/models'
+import { FullPageDiv } from '../components/styled-components'
 
 const Container = styled.div`
 	background: ${({theme, background}) => background || theme.grey_6};
@@ -79,10 +80,13 @@ const _ = ({navbar, footer, isLoading, loadingMessage, hero, breadcrumbs, conten
 					}
 					{
 						(content && !isLoading && !error)
-						&& <div className="flex grid grid-cols-1 w-full">
+						&& 
+						<div className="flex grid grid-cols-1 w-full">
+							<FullPageDiv>
 							{
 								content
 							}
+							</FullPageDiv>
 						</div>
 					}
 					{ error
