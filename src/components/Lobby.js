@@ -27,7 +27,7 @@ const Lobby = () => {
 
 	const {user} = useUser()
 	const { roomData, roomIncludesPlayer, addPlayer, removePlayer, startGame, deleteRoom, loadingRoomDeletion, roomFull} = useRoom()
-	const room = roomData.rooms[0]
+	const room = roomData?.rooms[0]
 
 	useEffect(() => {
 		if(!roomIncludesPlayer(user.uid) && roomFull()){
