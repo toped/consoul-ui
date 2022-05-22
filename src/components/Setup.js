@@ -25,7 +25,7 @@ const Setup = () => {
 				navigate(`/play/${data.createRoom.slug}`) 
 			},
 			onError: (err) => {
-				toaster.danger(formatters.extractGQLErrorMessage(err))
+				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
 			}
 		}
 	)

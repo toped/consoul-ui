@@ -21,15 +21,28 @@ const UserContextProvider = ({children}) => {
 	useEffect(() => {
 		if(firebase) {			
 			firebase.auth.onAuthStateChanged(
-				(user) => {
-					console.log('got user state change->', user)
+				(firebaseUser) => {
+					console.log('got user state change->', firebaseUser)
+					
+					if (firebaseUser && !user?.signedIn) {
+						console.log('Got firebaseuser. Signing user in...')
+						setUser(new User(firebaseUser))
+						getUserRoomData(firebaseUser?.uid)						
+					} 
 
-					if(!user?.signedIn) {
-						console.log('user not signed in... updating')
-						setUser(new User(user))
-						getUserRoomData(user.uid)
-					}else {
+					if (firebaseUser && user?.signedIn) {
 						console.log('user already signed in... not updating')
+					}
+
+					if(!firebaseUser && !user?.signedIn) {
+						console.log('user not signed in... updating')
+						setUser(prev => (
+							{
+								...prev,
+								loading: false
+							}
+
+						))
 					}
 				}
 			)

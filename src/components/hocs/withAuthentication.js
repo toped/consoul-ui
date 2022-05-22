@@ -8,7 +8,7 @@ import { useUser } from '../Context/UserProvider'
 
 export function withAuthentication(Component) {
 	return function withAuthenticationComponent(props) {
-		const {user} = useUser()
+		const { user } = useUser()
 		console.log('user in authentication room (check if still logged in) ->', user)
 
 		// Redirect to login if page is protected

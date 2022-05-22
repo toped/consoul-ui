@@ -8,6 +8,7 @@ import { navigate } from 'gatsby'
 import { Navbar, Alignment } from '@blueprintjs/core'
 import { useFirebase } from '../components/Context/FirebaseProvider'
 import { useUser } from '../components/Context/UserProvider'
+import { useRoom } from '../components/Context/RoomProvider'
 
 import { Typography, OnlineCircle } from '../components/primitives'
 import { formatters } from '../../utils/functions'
@@ -41,140 +42,16 @@ const _ = ({
 	page, fixed, loadingRooms, loadingHostedRooms, loadingPlayingRooms, ...props
 }) => {
 			
-	const {firebase} = useFirebase()
-	const {user} = useUser()
-
-	/* Query to check if user is hosting a room */
-	const [getUserHostedRooms] = useLazyQuery(
-		ROOMS, {
-			onCompleted: (data) => {
-				console.log('getUserHostedRooms->', data)
-
-				if (data.rooms.length > 0) {
-					console.log('getUserHostedRooms->', data)
-					if (data.rooms[0].players.length > 1) {
-						console.log('attempting to reassigning host')
-						reassignHost(data.rooms[0])
-					} else {
-						console.log('deleting room')
-						deleteRoom()
-					}
-				} else {
-					// Check if user is playing in a room
-					getUserPlayingRooms({
-						variables: {
-							playerUid: user?.uid
-						}
-					})
-				}
-			}, onError: (err) => {
-				console.log(err)
-			}
-		}
-	)
-
-	const [getUserPlayingRooms] = useLazyQuery(
-		ROOMS, {
-			onCompleted: (data) => {
-				// check if hostedRoom exists to avoid subsequent updates to state
-				console.log(data)
-				if (data.rooms.length > 0) {
-					removePlayer(user.playingRoom)
-				} else {
-					//navigate
-					navigate('/login')
-					firebase.doSignOut()
-				}
-			}, onError: (err) => {
-				console.log(err)
-			}
-		}
-	)
-	
-	const [updateRoomMutation] = useMutation(
-		UPDATE_ROOM, {
-			onCompleted: () => {
-				//navigate to home
-				navigate('/login')
-				firebase.doSignOut()
-			},
-			onError: (err) => {
-				toaster.danger(formatters.extractGQLErrorMessage(err))
-			}
-		}
-	)
-
-	const [deleteRoomMutation] = useMutation(
-		DELETE_ROOM, {
-			onCompleted: () => {
-				//navigate to home
-				navigate('/login')
-				firebase.doSignOut()
-			},
-			onError: (err) => {
-				toaster.danger(formatters.extractGQLErrorMessage(err))
-			}
-		}
-	)
-
-	const reassignHost = (room) => {
-		let newPlayerList = room.players.filter(p => !p.isHost && !p.anonymousUser)
-		console.log('newPlayerList', newPlayerList)
-		newPlayerList[0] = {
-			...newPlayerList[0],
-			isHost: true
-		}
-		
-		updateRoomMutation(
-			{
-				variables: {
-					room: {
-						...room,
-						host: newPlayerList[0].uid,
-						players: newPlayerList
-					}
-				}
-			}
-		)
-	}
-
-	const removePlayer = (room) => {
-		let newPlayerList = room.players.filter(p => p.uid !== user.uid)
-
-		updateRoomMutation(
-			{
-				variables: {
-					room: {
-						...room,
-						players: newPlayerList
-					}
-				}
-			}
-		)
-		
-	}
-
-	const deleteRoom = () => {
-		deleteRoomMutation(
-			{
-				variables: {
-					host:  user.uid
-				}
-			}
-		)
-	}
+	const { firebase } = useFirebase()
+	const { user } = useUser()
+	const { removePlayer } = useRoom()
 
 
 	const logOut = () => {
 		if (firebase) {
-			// query for room to make sure details are up to date
-			// then remove user from current room and reassign host if possible, otherwise delete room
-			console.log('loggin user out: ', user.uid)
-			getUserHostedRooms({
-				variables: {
-					host: user.uid
-				}
-			})
+			// potential race condition
+			removePlayer(user)
+			firebase.doSignOut()
 		}
 	}
 	

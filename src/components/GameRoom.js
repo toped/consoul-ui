@@ -10,19 +10,19 @@ import { formatters } from '../../utils/functions'
 import { Game, GameCard } from '../../utils/models'
 import { UPDATE_ROOM } from '../../utils/graphql/mutations'
 import { useUser } from './Context/UserProvider'
+import { useRoom } from './Context/RoomProvider'
 
-const GameRoom = ({ room, subscribeToRoomUpdates, subscribeToDeletion }) => {
+
+const GameRoom = () => {
 
 	const [game, setGame] = useState(null)
 	const {user} = useUser()
-	useEffect(() => {
-		console.log('lobby subscribing to room updates')
-		subscribeToRoomUpdates()
-		subscribeToDeletion()
-	}, [])
+	const { roomData, roomIncludesPlayer} = useRoom()
+	const room = roomData.rooms[0]
+
   
 	useEffect(() => {
-		if (user?.uid && !room?.players.map(p => p.uid).includes(user.uid)) {
+		if(!roomIncludesPlayer(user.uid)) {
 			navigate('/lost')
 		}
 		
@@ -56,7 +56,7 @@ const GameRoom = ({ room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 	const [updateRoomMutation] = useMutation(
 		UPDATE_ROOM, {
 			onError: (err) => {
-				toaster.danger(formatters.extractGQLErrorMessage(err))
+				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
 			}
 		}
 	)
@@ -268,10 +268,6 @@ const GameRoom = ({ room, subscribeToRoomUpdates, subscribeToDeletion }) => {
 }
 
 GameRoom.propTypes = {
-	room: PropTypes.object,
-	user: PropTypes.object,
-	subscribeToRoomUpdates: PropTypes.func,
-	subscribeToDeletion: PropTypes.func
 }
 
 export default GameRoom

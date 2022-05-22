@@ -14,6 +14,7 @@ export const ROOMS = gql`
         phoneNumber
         uid
         isHost
+        anonymousUser
       }
       game {
         rounds

@@ -10,12 +10,18 @@ import Lost from '../components/Lost'
 import { Layout } from '../Layout'
 import { useRoom } from '../components/Context/RoomProvider';
 import { FullPageDiv } from '../components/styled-components';
+import { useUser } from '../components/Context/UserProvider';
 
 const Content = ({slug}) => {	
 	const { roomData, getInitialRoomData, subscribeToRoomUpdates, subscribeToDeletion, loadingRoom} = useRoom()
-	
+	const room = roomData?.rooms[0]
+
 	useEffect(() => {
 		getInitialRoomData(slug)
+
+		console.log('Subscribing to room updates')
+		subscribeToRoomUpdates(slug)
+		subscribeToDeletion(slug)
 	},[])
 
 	return(
@@ -23,21 +29,15 @@ const Content = ({slug}) => {
 			<SEO title="Game" />
 			<FullPageDiv>
 			{
-				!loadingRoom && Array.isArray(roomData?.rooms) && roomData?.rooms.length ? 
-					!roomData.rooms[0].started
+				!loadingRoom && Array.isArray(roomData?.rooms) && roomData?.rooms.length 
+					? 
+					!room.started
 						?
 						// render lobby
-						<Lobby
-							room={roomData.rooms[0]}
-							subscribeToRoomUpdates={() => subscribeToRoomUpdates(slug)}
-							subscribeToDeletion={() => subscribeToDeletion(slug)}
-						/>
+						<Lobby slug={slug} />
 						:
 						// render game room
-						<GameRoom
-							room={roomData.rooms[0]}
-							subscribeToRoomUpdates={() => subscribeToRoomUpdates(slug)}
-							subscribeToDeletion={() => subscribeToDeletion(slug)}
+						<GameRoom slug={slug}
 						/>
 					: null
 			}
@@ -47,15 +47,14 @@ const Content = ({slug}) => {
 }
 
 Content.propTypes = {
-	room: PropTypes.object,
-	subscribeToRoomUpdates: PropTypes.func,
-	subscribeToDeletion: PropTypes.func
+	slug: PropTypes.string
 }
 
 
 const GamePage = () => {	
 
 	const { loadingRoom } = useRoom()
+	const { user } = useUser()
 
 	return (
 		<Layout
@@ -66,7 +65,7 @@ const GamePage = () => {
 					<Content path="/play/:slug"/>
 				</Router>
 				}
-			loading={loadingRoom}
+			loading={loadingRoom || user.loading}
 		/>
 	)
 }
@@ -75,4 +74,4 @@ GamePage.propTypes = {
 
 }
 
-export default withAuthentication(GamePage)
+export default GamePage
