@@ -65,7 +65,7 @@ const GamePage = () => {
 					<Content path="/play/:slug"/>
 				</Router>
 				}
-			loading={loadingRoom || user.loading}
+			isLoading={loadingRoom || user.loading}
 		/>
 	)
 }

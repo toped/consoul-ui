@@ -18,6 +18,7 @@ const SetupPage = () => {
 					<Setup/>
 				</>
 			}
+			isLoading={user.loading}
 		/>
 	)
 }
