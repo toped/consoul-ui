@@ -6,7 +6,7 @@ import { toaster } from 'evergreen-ui'
 
 import { formatters } from '../../../utils/functions'
 import { ROOMS } from '../../../utils/graphql/queries'
-import { DELETE_ROOM, UPDATE_ROOM } from '../../../utils/graphql/mutations'
+import { CREATE_ROOM, DELETE_ROOM, UPDATE_ROOM } from '../../../utils/graphql/mutations'
 import { ROOM_SUBSCRIPTION, ROOM_DELETED_SUBSCRIPTION } from '../../../utils/graphql/subscriptions'
 import { useUser } from './UserProvider'
 
@@ -83,11 +83,13 @@ const RoomContextProvider = ({children}) => {
 	})
 
 	const roomIncludesPlayer = (uid) => {
+		if(!roomData) return
 		const room = roomData.rooms[0]
 		return room?.players.map(p => p.uid).includes(uid)
 	}
 
 	const roomFull = () => {
+		if(!roomData) return
 		const room = roomData.rooms[0]
 		return room?.players.length < room?.settings.maxPlayers
 	}
@@ -133,19 +135,18 @@ const RoomContextProvider = ({children}) => {
 		}
 
 		// TODO: Check if game can continue with current number of players
-
+		console.log('removing player...')
 		updateRoomMutation(
 			{
 				variables: {
 					room: {
 						...room,
 						players: [
-							...room?.players.filter(p=>p.uid !== player.uid)
+							...room.players.filter(p=>p.uid !== player.uid)
 						]
 					}
 				},
 				onCompleted: () => {
-					getUserRoomData()
 					navigate('/')
 				}
 			}
@@ -227,12 +228,40 @@ const RoomContextProvider = ({children}) => {
 						}
 					},
 					onCompleted: () => {
-						getUserRoomData()
 						navigate('/')
 					}
 				}
 			)
 		}
+	}
+
+	const [createRoomMutation, {loading: loadingRoomCreation}] = useMutation(
+		CREATE_ROOM, {
+			onCompleted: (data) => {
+				//navigate to lobby
+				navigate(`/play/${data.createRoom.slug}`) 
+			},
+			onError: (err) => {
+				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
+			}
+		}
+	)
+
+	const createRoom = (uid, rounds, timeLimit, maxPlayers) => {
+		createRoomMutation(
+			{
+				variables: {
+					room: {
+						host: uid,
+						settings: {
+							rounds,
+							timeLimit,
+							maxPlayers
+						}
+					}
+				}
+			}
+		)
 	}
 
 	return (
@@ -248,6 +277,8 @@ const RoomContextProvider = ({children}) => {
 			startGame,
 			deleteRoom,
 			tryReassignRoomHost,
+			createRoom,
+			loadingRoomCreation,
 			loadingRoomDeletion,
 			loadingRoom}}>
 			{children}

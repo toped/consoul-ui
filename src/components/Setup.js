@@ -1,51 +1,20 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import  Link from 'gatsby-link'
-import { useStaticQuery, graphql, navigate } from 'gatsby' // to query for image data
-import { useMutation } from '@apollo/react-hooks'
-import { toaster } from 'evergreen-ui'
+import { useStaticQuery, graphql } from 'gatsby' // to query for image data
 
 import CategoryList from './primitives/CategoryList'
 import { Typography, SegmentedControl, Button } from './primitives'
-import { formatters } from '../../utils/functions'
-import { CREATE_ROOM } from '../../utils/graphql/mutations'
 import { useUser } from './Context/UserProvider'
+import { useRoom } from './Context/RoomProvider'
 
 const Setup = () => {
 
 	const [rounds, setRounds] = useState(5)
 	const [timeLimit, setTimeLimit] = useState(30)
 	const [maxPlayers, setMaxPlayers] = useState(5)
-	const {user} = useUser()
-	
-	const [createRoomMutation, {loading: loadingRoomCreation}] = useMutation(
-		CREATE_ROOM, {
-			onCompleted: (data) => {
-				//navigate to lobby
-				navigate(`/play/${data.createRoom.slug}`) 
-			},
-			onError: (err) => {
-				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
-			}
-		}
-	)
-
-	const createRoom = () => {
-		createRoomMutation(
-			{
-				variables: {
-					room: {
-						host: user.uid,
-						settings: {
-							rounds,
-							timeLimit,
-							maxPlayers
-						}
-					}
-				}
-			}
-		)
-	}
+	const { user } = useUser()
+	const { createRoom, loadingRoomCreation } = useRoom()
 
 	const { setupMeme } = useStaticQuery(graphql`
 		query {
@@ -111,7 +80,7 @@ const Setup = () => {
 						</div>
 
 						<div className="mb-4">
-							<Button primary onClick={createRoom} loading={loadingRoomCreation}>Confirm</Button>
+							<Button primary onClick={() => createRoom(user?.uid, rounds, timeLimit, maxPlayers)} loading={loadingRoomCreation}>Confirm</Button>
 						</div> 
 					</div>
 				</div>				

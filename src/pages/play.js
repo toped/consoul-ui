@@ -14,7 +14,7 @@ import { useUser } from '../components/Context/UserProvider';
 
 const Content = ({slug}) => {	
 	const { roomData, getInitialRoomData, subscribeToRoomUpdates, subscribeToDeletion, loadingRoom} = useRoom()
-	const room = roomData?.rooms[0]
+	const room = roomData?.rooms.length ? roomData?.rooms[0] : null
 
 	useEffect(() => {
 		getInitialRoomData(slug)
@@ -29,17 +29,14 @@ const Content = ({slug}) => {
 			<SEO title="Game" />
 			<FullPageDiv>
 			{
-				!loadingRoom && Array.isArray(roomData?.rooms) && roomData?.rooms.length 
-					? 
-					!room.started
-						?
-						// render lobby
-						<Lobby slug={slug} />
-						:
-						// render game room
-						<GameRoom slug={slug}
-						/>
-					: null
+				!room?.started
+					?
+					// render lobby
+					<Lobby slug={slug} />
+					:
+					// render game room
+					<GameRoom slug={slug}
+					/>
 			}
 			</FullPageDiv>
 		</>

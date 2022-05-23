@@ -49,7 +49,6 @@ const _ = ({
 
 	const logOut = () => {
 		if (firebase) {
-			// potential race condition
 			removePlayer(user)
 			firebase.doSignOut()
 		}
