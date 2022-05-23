@@ -60,17 +60,13 @@ const Lobby = () => {
 							? 
 							<>
 								<Button className="mb-4" color="MediumSeaGreen" outline onClick={()=>startGame()}>Start Game</Button>
-								<Button className="mb-4" color='Crimson' outline onClick={() => deleteRoom(user.uid)} loading={loadingRoomDeletion}>End game</Button>
+								<Button className="mb-4" color='Crimson' outline onClick={() => deleteRoom(user?.uid)} loading={loadingRoomDeletion}>End game</Button>
 							</>
 							: null
 					}
 
 					{/* Player buttons */}
-					{
-						user?.uid !== room?.host
-							? <Button className="mb-4" color='Crimson' outline onClick={() => removePlayer(user)} loading={loadingRoomDeletion}>Leave game</Button>
-							: null
-					}
+					<Button className="mb-4" color='Crimson' outline onClick={() => removePlayer(user)} loading={loadingRoomDeletion}>Leave game</Button>
 				</>
 			}
 			

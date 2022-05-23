@@ -23,10 +23,10 @@ const UserContextProvider = ({children}) => {
 			firebase.auth.onAuthStateChanged(
 				(firebaseUser) => {
 					console.log('got user state change->', firebaseUser)
-					
+					setUser(new User(firebaseUser))
+
 					if (firebaseUser && !user?.signedIn) {
 						console.log('Got firebaseuser. Signing user in...')
-						setUser(new User(firebaseUser))
 						getUserRoomData(firebaseUser?.uid)						
 					} 
 
@@ -36,13 +36,6 @@ const UserContextProvider = ({children}) => {
 
 					if(!firebaseUser && !user?.signedIn) {
 						console.log('user not signed in... updating')
-						setUser(prev => (
-							{
-								...prev,
-								loading: false
-							}
-
-						))
 					}
 				}
 			)

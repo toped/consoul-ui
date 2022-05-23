@@ -8,12 +8,15 @@ import { formatters } from '../../../utils/functions'
 import { ROOMS } from '../../../utils/graphql/queries'
 import { DELETE_ROOM, UPDATE_ROOM } from '../../../utils/graphql/mutations'
 import { ROOM_SUBSCRIPTION, ROOM_DELETED_SUBSCRIPTION } from '../../../utils/graphql/subscriptions'
+import { useUser } from './UserProvider'
 
 const RoomContext = createContext()
 
 const useRoom = () => (useContext(RoomContext))
 
 const RoomContextProvider = ({children}) => {
+
+	const { getUserRoomData } = useUser()
 
     const getInitialRoomData = (slug) => {
         getRooms({
@@ -25,7 +28,7 @@ const RoomContextProvider = ({children}) => {
 
     const [getRooms, {subscribeToMore, data: roomData, loading: loadingRoom }] = useLazyQuery(ROOMS, {
 		onCompleted: (data) => {
-			if (roomData === undefined && data.rooms.length === 0) {
+			if (data.rooms.length === 0) {
 				navigate('/lost') // should probably have a dedicated room not found page (404 page)
 			} 
 		},
@@ -129,6 +132,8 @@ const RoomContextProvider = ({children}) => {
 			tryReassignRoomHost(player.uid)
 		}
 
+		// TODO: Check if game can continue with current number of players
+
 		updateRoomMutation(
 			{
 				variables: {
@@ -216,6 +221,10 @@ const RoomContextProvider = ({children}) => {
 							host: newPlayerList[0].uid,
 							players: newPlayerList
 						}
+					},
+					onCompleted: () => {
+						getUserRoomData()
+						navigate('/')
 					}
 				}
 			)

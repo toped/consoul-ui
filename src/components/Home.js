@@ -16,9 +16,9 @@ const Home = () => {
 		<>
 			<Typography variant="h3">What you Meme?</Typography>
 			{
-				user?.playingRoom
+				user?.playingRoom || user?.hostedRoom
 					?
-					<Link to={`/play/${user.playingRoom.slug}`}>
+					<Link to={`/play/${user?.playingRoom?.slug}`}>
 						<Button className="mb-4" loading={loadingPlayingRooms} color="MediumSeaGreen" outline>Re-join Current Game</Button>
 					</Link>
 					:
@@ -28,15 +28,12 @@ const Home = () => {
 			}
 
 			{
-				user?.hostedRoom
+				!user?.playingRoom && !user?.hostedRoom
 					?
-					<Link to={`/play/${user.hostedRoom.slug}`}>
-						<Button className="mb-4" loading={loadingHostedRooms} color="SlateBlue" outline>Re-join Hosted Game</Button>
-					</Link>
-					:
 					<Link to="/setup">
 						<Button className="mb-4" loading={loadingHostedRooms} outline>Host a Game</Button>
 					</Link>
+					: null
 			}
 			<Link to="/rules">
 				<Button secondary outline>How to Play</Button>
