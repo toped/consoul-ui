@@ -143,6 +143,10 @@ const RoomContextProvider = ({children}) => {
 							...room?.players.filter(p=>p.uid !== player.uid)
 						]
 					}
+				},
+				onCompleted: () => {
+					getUserRoomData()
+					navigate('/')
 				}
 			}
 		)
