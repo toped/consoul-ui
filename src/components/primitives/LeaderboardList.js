@@ -1,9 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { Avatar, BanCircleIcon, CrownIcon } from 'evergreen-ui'
+import { Avatar } from 'evergreen-ui'
 
 import Typography from './Typography'
+import Button from './Button'
+
+import { useRoom } from '../Context/RoomProvider'
+import { useUser } from '../Context/UserProvider'
 
 const Wrapper = styled.div`
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -30,6 +34,9 @@ const LeaderboardItem = styled.div`
 
 const _ = ({players}) => {
 
+	const { user } = useUser()
+	const { removePlayer, loadingRoomUpdate } = useRoom()
+
 	return (
 		<Wrapper className="flex flex-col my-4 w-full">
 			{
@@ -52,6 +59,7 @@ const _ = ({players}) => {
 					))
 					: null
 			}
+			<Button className="mb-4" color='Crimson' outline onClick={() => removePlayer(user)} loading={loadingRoomUpdate}>Leave game</Button>
 		</Wrapper>
 	)
 }

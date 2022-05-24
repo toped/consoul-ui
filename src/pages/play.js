@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { Router } from "@reach/router";
-import withAuthentication from '../components/hocs/withAuthentication'
 
 import SEO from '../components/seo'
+import { GameContextProvider } from '../components/Context/GameProvider'
 import Lobby from '../components/Lobby'
 import GameRoom from '../components/GameRoom'
 import Lost from '../components/Lost'
@@ -13,7 +13,7 @@ import { FullPageDiv } from '../components/styled-components';
 import { useUser } from '../components/Context/UserProvider';
 
 const Content = ({slug}) => {	
-	const { roomData, getInitialRoomData, subscribeToRoomUpdates, subscribeToDeletion, loadingRoom} = useRoom()
+	const { roomData, getInitialRoomData, subscribeToRoomUpdates, subscribeToDeletion } = useRoom()
 	const room = roomData?.rooms.length ? roomData?.rooms[0] : null
 
 	useEffect(() => {
@@ -35,8 +35,9 @@ const Content = ({slug}) => {
 					<Lobby slug={slug} />
 					:
 					// render game room
-					<GameRoom slug={slug}
-					/>
+					<GameContextProvider>
+						<GameRoom slug={slug}/>
+					</GameContextProvider>
 			}
 			</FullPageDiv>
 		</>

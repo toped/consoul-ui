@@ -7,8 +7,8 @@ import { useUser } from './Context/UserProvider'
 
 const Home = () => {
 	useEffect(()=> {
-		getUserRoomData(user?.uid)
-	},[])
+		getUserRoomData()
+	},[user])
 
 	const {user, getUserRoomData, loadingHostedRooms, loadingPlayingRooms} = useUser()
 	
@@ -16,7 +16,7 @@ const Home = () => {
 		<>
 			<Typography variant="h3">What you Meme?</Typography>
 			{
-				user?.playingRoom || user?.hostedRoom
+				user?.playingRoom
 					?
 					<Link to={`/play/${user?.playingRoom?.slug}`}>
 						<Button className="mb-4" loading={loadingPlayingRooms} color="MediumSeaGreen" outline>Re-join Current Game</Button>

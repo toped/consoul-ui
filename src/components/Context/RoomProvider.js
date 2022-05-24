@@ -8,15 +8,12 @@ import { formatters } from '../../../utils/functions'
 import { ROOMS } from '../../../utils/graphql/queries'
 import { CREATE_ROOM, DELETE_ROOM, UPDATE_ROOM } from '../../../utils/graphql/mutations'
 import { ROOM_SUBSCRIPTION, ROOM_DELETED_SUBSCRIPTION } from '../../../utils/graphql/subscriptions'
-import { useUser } from './UserProvider'
 
 const RoomContext = createContext()
 
 const useRoom = () => (useContext(RoomContext))
 
 const RoomContextProvider = ({children}) => {
-
-	const { getUserRoomData } = useUser()
 
     const getInitialRoomData = (slug) => {
         getRooms({
@@ -27,11 +24,6 @@ const RoomContextProvider = ({children}) => {
     }
 
     const [getRooms, {subscribeToMore, data: roomData, loading: loadingRoom }] = useLazyQuery(ROOMS, {
-		onCompleted: (data) => {
-			if (data.rooms.length === 0) {
-				navigate('/lost') // should probably have a dedicated room not found page (404 page)
-			} 
-		},
 		onError: (err) => {
 			console.error(err)
 		},
@@ -59,7 +51,7 @@ const RoomContextProvider = ({children}) => {
 			variables: { slug },
 			updateQuery: (prevRooms, { subscriptionData }) => {
 
-				if (!subscriptionData.data) return prevRooms
+				if (!subscriptionData.data) return prevnuRooms
 				
 				//check players
 				if (prevRooms.rooms[0].host !== subscriptionData.data.roomUpdated.host) {
@@ -94,7 +86,7 @@ const RoomContextProvider = ({children}) => {
 		return room?.players.length < room?.settings.maxPlayers
 	}
 
-	const [updateRoomMutation] = useMutation(
+	const [updateRoomMutation, { loading: loadingRoomUpdate }] = useMutation(
 		UPDATE_ROOM, {
 			onError: (err) => {
 				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
@@ -205,7 +197,7 @@ const RoomContextProvider = ({children}) => {
 		
 		console.log('potentialHostList->', potentialHostList)
 
-		// 
+		
 		potentialHostList[0] = {
 			...potentialHostList[0],
 			isHost: true
@@ -280,6 +272,7 @@ const RoomContextProvider = ({children}) => {
 			createRoom,
 			loadingRoomCreation,
 			loadingRoomDeletion,
+			loadingRoomUpdate,
 			loadingRoom}}>
 			{children}
 		</RoomContext.Provider>

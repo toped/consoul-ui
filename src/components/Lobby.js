@@ -25,8 +25,8 @@ RoomSettings.propTypes = {
 
 const Lobby = () => {
 
-	const {user} = useUser()
-	const { roomData, roomIncludesPlayer, addPlayer, removePlayer, startGame, deleteRoom, loadingRoomDeletion, roomFull} = useRoom()
+	const { user } = useUser()
+	const { roomData, roomIncludesPlayer, addPlayer, removePlayer, startGame, deleteRoom, loadingRoomDeletion, loadingRoomUpdate, roomFull} = useRoom()
 	const room = roomData?.rooms[0]
 
 	useEffect(() => {
@@ -66,7 +66,7 @@ const Lobby = () => {
 					}
 
 					{/* Player buttons */}
-					<Button className="mb-4" color='Crimson' outline onClick={() => removePlayer(user)} loading={loadingRoomDeletion}>Leave game</Button>
+					<Button className="mb-4" color='Crimson' outline onClick={() => removePlayer(user)} loading={loadingRoomUpdate}>Leave game</Button>
 				</>
 			}
 			

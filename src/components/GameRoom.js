@@ -1,23 +1,19 @@
-import React, { useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
+import React, { useEffect } from 'react'
 import { navigate } from 'gatsby'
-import { useMutation } from '@apollo/react-hooks'
-import { toaster } from 'evergreen-ui'
 
 import { FullPageDiv, GameStageLeft, GameStageRight, MemeFrame } from '../components/styled-components'
 import { Typography, Countdown, Timer, LeaderboardList, CardSummary, TimesUp, Button, CaptionInput } from './primitives'
-import { formatters } from '../../utils/functions'
-import { Game, GameCard } from '../../utils/models'
-import { UPDATE_ROOM } from '../../utils/graphql/mutations'
+import { Game } from '../../utils/models'
 import { useUser } from './Context/UserProvider'
 import { useRoom } from './Context/RoomProvider'
+import { useGame } from './Context/GameProvider'
 
 
 const GameRoom = () => {
 
-	const [game, setGame] = useState(null)
-	const {user} = useUser()
+	const { user } = useUser()
 	const { roomData, roomIncludesPlayer} = useRoom()
+	const { game, setGame, updateGameObject, submitCard, revealCard, highlightCard } = useGame()
 	const room = roomData.rooms[0]
 
   
@@ -52,141 +48,14 @@ const GameRoom = () => {
 			setGame(gameObj)
 		}
 	}, [room])
-  
-	const [updateRoomMutation] = useMutation(
-		UPDATE_ROOM, {
-			onError: (err) => {
-				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
-			}
-		}
-	)
-  
-	const updateGameObject = (progress) => {
-		let currentRound
-		let currentTurn
-
-		if (progress && room.game) {
-			currentTurn = room.game.currentTurn < room.players.length ? room.game.currentTurn + 1 : null
-			console.log('Current turn updating to ', currentTurn)
-			currentRound = !currentTurn ? room.game.currentRound + 1 : room.game.currentRound
-			console.log('Current round updating to ', currentRound)
-
-		}
-		
-		const gameObj = new Game({
-			rounds: room.settings.rounds,
-			timeLimit: room.settings.timeLimit,
-			currentRound,
-			currentTurn,
-			players: room.players,
-			gameOver: game?.lastRound
-		})
-    
-		console.log('mutating room from game room')
-		updateRoomMutation(
-			{
-				variables: {
-					room: {
-						...room,
-						triggerRound: true,
-						game: gameObj.toGraphQLModel
-					}
-				}
-			}
-		)
-	}
-
-
-	const submitCard = (text) => {
-		let cards = Object.assign([], game.cards || [])
-		cards = cards.filter(c => c.user !== user.uid)
-
-		const newCard = new GameCard({
-			user: user.uid,
-			text
-		})
-
-		cards.push(newCard)
-
-		const gameObj = new Game({
-			...game,
-			cards
-		})
-    
-		updateRoomMutation(
-			{
-				variables: {
-					room: {
-						...room,
-						game: gameObj.toGraphQLModel
-					}
-				}
-			}
-		) 
-	}
-
-	const revealCard = (uid) => {
-		let cards = Object.assign([], game.cards)
-		cards = cards.map(c => (
-			c.user === uid
-				? {
-					...c,
-					revealed: true
-				}
-				: c
-		))
-
-		const gameObj = new Game({
-			...game,
-			cards
-		})
-    
-		updateRoomMutation(
-			{
-				variables: {
-					room: {
-						...room,
-						game: gameObj.toGraphQLModel
-					}
-				}
-			}
-		) 
-	}
-
-	const highlightCard = (uid) => {
-		let cards = Object.assign([], game.cards)
-		cards = cards.map(c => (
-			c.user === uid
-				? {
-					...c,
-					highlighted: true
-				}
-				: {
-					...c,
-					highlighted: false
-				}
-		))
-
-		const gameObj = new Game({
-			...game,
-			cards
-		})
-    
-		updateRoomMutation(
-			{
-				variables: {
-					room: {
-						...room,
-						game: gameObj.toGraphQLModel
-					}
-				}
-			}
-		) 
-	}
 
   
 	return (
-		<FullPageDiv>
+		<>
+		{
+			!room 
+			? <Empty/>
+			:<FullPageDiv>
 			<div className="flex w-full h-full flex-col md:flex-row">
 				<GameStageLeft>
 					<div className="flex justify-between">
@@ -264,6 +133,8 @@ const GameRoom = () => {
 					: null
 			}
 		</FullPageDiv>
+		}
+		</>
 	)
 }
 

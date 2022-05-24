@@ -27,7 +27,7 @@ const UserContextProvider = ({children}) => {
 
 					if (firebaseUser && !user?.signedIn) {
 						console.log('Got firebaseuser. Signing user in...')
-						getUserRoomData(firebaseUser?.uid)						
+						// getUserRoomData(firebaseUser?.uid)						
 					} 
 
 					if (firebaseUser && user?.signedIn) {
@@ -43,24 +43,27 @@ const UserContextProvider = ({children}) => {
 	}, [firebase])
 
 	/* Side effect of getUserRoomData is that user state is modified */
-	const getUserRoomData = (uid) => {
-		getUserHostedRooms({
-			variables: {
-				host: uid
-			}
-		})
-
-		getUserPlayingRooms({
-			variables: {
-				playerUid: uid
-			}
-		})
+	const getUserRoomData = () => {
+		if(user.signedIn) {
+			getUserHostedRooms({
+				variables: {
+					host: user.uid
+				}
+			})
+	
+			getUserPlayingRooms({
+				variables: {
+					playerUid: user.uid
+				}
+			})
+		}
 	}
 
 	/* Query to check if user is hosting a room */
 	const [getUserHostedRooms, { loading: loadingHostedRooms, error: roomsHostedError}] = useLazyQuery(
 		ROOMS, {
 			onCompleted: (data) => {
+				console.log('getUserHostedRooms->', data)
 				if (data.rooms?.length > 0) {
 					console.log('updating hosted room')
 					setUser(prev => {
