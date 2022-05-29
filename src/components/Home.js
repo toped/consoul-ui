@@ -6,11 +6,11 @@ import { Typography, Button } from './primitives'
 import { useUser } from './Context/UserProvider'
 
 const Home = () => {
+	const {user, getUserRoomData, loadingHostedRooms, loadingPlayingRooms} = useUser()
+	
 	useEffect(()=> {
 		getUserRoomData()
 	},[user])
-
-	const {user, getUserRoomData, loadingHostedRooms, loadingPlayingRooms} = useUser()
 	
 	return (
 		<>
