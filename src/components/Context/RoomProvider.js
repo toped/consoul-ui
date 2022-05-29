@@ -72,7 +72,9 @@ const RoomContextProvider = ({children}) => {
 
 				//check players
 				if (prevRooms.rooms[0].host !== subscriptionData.data.roomUpdated.host) {
-					toaster.notify('Host reassigned!')
+					// get new host name
+					const hostName = subscriptionData.data.roomUpdated.players.find(p => p.uid === subscriptionData.data.roomUpdated.host).displayName
+					toaster.notify(`Host reassigned to ${hostName}`)
 				}
 				else 
 				if (subscriptionData.data.roomUpdated.players) {
