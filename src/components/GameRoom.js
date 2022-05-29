@@ -35,7 +35,7 @@ const GameRoom = () => {
 			}
 		}
 
-	}, [user])
+	}, [])
 
 	useEffect(() => {
 		if (room.game) {

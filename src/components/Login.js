@@ -90,7 +90,7 @@ const Login = () => {
 		if (user.signedIn) {
 			navigate('/')
 		}
-	}, [user])
+	}, [])
 	
 	const LoginForm = () => {
 		return (

@@ -39,7 +39,7 @@ const Lobby = () => {
 				uid: user.uid
 			})
 		}
-	}, [user])
+	}, [])
 
 	return (
 		<>
