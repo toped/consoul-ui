@@ -1,4 +1,4 @@
-import React, { useEffect, createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useLazyQuery, useMutation } from '@apollo/react-hooks'
 import { navigate } from 'gatsby'

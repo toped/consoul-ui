@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { navigate } from 'gatsby' // to query for image data
-import { useLazyQuery } from '@apollo/react-hooks'
 
-import { ROOMS } from '../../../utils/graphql/queries'
 import { useUser } from '../Context/UserProvider'
 
 

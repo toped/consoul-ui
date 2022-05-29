@@ -1,5 +1,3 @@
-import { nanoid } from 'nanoid'
-
 class User {
 	constructor(firebaseUser) {
 		this.displayName = firebaseUser?.displayName
