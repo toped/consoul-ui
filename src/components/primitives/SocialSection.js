@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { AiFillLinkedin, AiFillGithub, AiFillInstagram, AiFillFacebook } from 'react-icons/ai'
+import { AiFillLinkedin, AiFillGithub, AiFillInstagram, AiFillFacebook, AiFillCalendar } from 'react-icons/ai'
 
 const SocialSectionWrapper = styled.div`
   display: inline-flex;

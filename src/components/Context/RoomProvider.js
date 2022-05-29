@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react'
+import React, { useEffect, createContext, useContext, useState } from 'react'
 import PropTypes from 'prop-types'
 import { useLazyQuery, useMutation } from '@apollo/react-hooks'
 import { navigate } from 'gatsby'
@@ -14,16 +14,30 @@ const RoomContext = createContext()
 const useRoom = () => (useContext(RoomContext))
 
 const RoomContextProvider = ({children}) => {
-
+	
+	const [unsubscribeToRoomUpdates, setunsubscribeToRoomUpdates] = useState(null)
+	
     const getInitialRoomData = (slug) => {
         getRooms({
             variables: {
                 slug
             }
-        })
+        })		
     }
 
     const [getRooms, {subscribeToMore, data: roomData, loading: loadingRoom }] = useLazyQuery(ROOMS, {
+		onCompleted: () => {
+			const slug = roomData?.rooms[0]?.slug
+			
+			if(slug && !unsubscribeToRoomUpdates) {
+				console.log('Subscribing to room updates')
+				const subscription1 = subscribeToRoomUpdates(slug)
+				const subscription2 = subscribeToDeletion(slug)
+				setunsubscribeToRoomUpdates(() => {
+					return () => { subscription1(); subscription2(); }
+				})
+			}
+		},
 		onError: (err) => {
 			console.error(err)
 		},
@@ -31,7 +45,7 @@ const RoomContextProvider = ({children}) => {
 	})
 
 	const subscribeToDeletion = (slug) => {
-		subscribeToMore({
+		const unsubscribe = subscribeToMore({
 			document: ROOM_DELETED_SUBSCRIPTION,
 			variables: { slug },
 			updateQuery: (prevRooms) => {
@@ -43,16 +57,19 @@ const RoomContextProvider = ({children}) => {
 				})
 			}
 		})
+
+		return unsubscribe
 	}
 
-	const subscribeToRoomUpdates = (slug) =>
-		subscribeToMore({
+	const subscribeToRoomUpdates = (slug) => {
+
+		const unsubscribe = subscribeToMore({
 			document: ROOM_SUBSCRIPTION,
 			variables: { slug },
 			updateQuery: (prevRooms, { subscriptionData }) => {
 
-				if (!subscriptionData.data) return prevnuRooms
-				
+				if (!subscriptionData.data) return prevRooms
+
 				//check players
 				if (prevRooms.rooms[0].host !== subscriptionData.data.roomUpdated.host) {
 					toaster.notify('Host reassigned!')
@@ -72,7 +89,12 @@ const RoomContextProvider = ({children}) => {
 					rooms: [subscriptionData.data.roomUpdated]
 				})
 			}
-	})
+		})
+
+
+		return unsubscribe
+	}
+		
 
 	const roomIncludesPlayer = (uid) => {
 		if(!roomData) return
@@ -128,6 +150,10 @@ const RoomContextProvider = ({children}) => {
 
 		// TODO: Check if game can continue with current number of players
 		console.log('removing player...')
+
+		// currently assuming, player can only remove themself
+		unsubscribe()
+
 		updateRoomMutation(
 			{
 				variables: {
@@ -176,6 +202,8 @@ const RoomContextProvider = ({children}) => {
 	)
 
 	const deleteRoom = (uid) => {
+		unsubscribe()
+
 		deleteRoomMutation(
 			{
 				variables: {
@@ -254,6 +282,13 @@ const RoomContextProvider = ({children}) => {
 				}
 			}
 		)
+	}
+
+	const unsubscribe = () => {
+		if(typeof(unsubscribeToRoomUpdates) === 'function') {
+			console.log('unsubscribing to room updates')
+			unsubscribeToRoomUpdates()
+		}
 	}
 
 	return (

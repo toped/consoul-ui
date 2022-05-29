@@ -18,10 +18,6 @@ const Content = ({slug}) => {
 
 	useEffect(() => {
 		getInitialRoomData(slug)
-
-		console.log('Subscribing to room updates')
-		subscribeToRoomUpdates(slug)
-		subscribeToDeletion(slug)
 	},[])
 
 	return(
