@@ -10,8 +10,8 @@ const Home = () => {
 	
 	useEffect(()=> {
 		getUserRoomData()
-	},[user])
-	
+	},[])
+
 	return (
 		<>
 			<Typography variant="h3">What you Meme?</Typography>

@@ -15,10 +15,6 @@ const UserContextProvider = ({children}) => {
 	const { firebase } = useFirebase()
 
 	useEffect(() => {
-		console.log('user updated->', user)
-	}, [user])
-
-	useEffect(() => {
 		if(firebase) {			
 			firebase.auth.onAuthStateChanged(
 				(firebaseUser) => {
@@ -63,7 +59,6 @@ const UserContextProvider = ({children}) => {
 	const [getUserHostedRooms, { loading: loadingHostedRooms, error: roomsHostedError}] = useLazyQuery(
 		ROOMS, {
 			onCompleted: (data) => {
-				console.log('getUserHostedRooms->', data)
 				if (data.rooms?.length > 0) {
 					console.log('updating hosted room')
 					setUser(prev => {
