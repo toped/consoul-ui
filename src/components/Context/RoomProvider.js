@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { useLazyQuery, useMutation } from '@apollo/react-hooks'
 import { navigate } from 'gatsby'
@@ -36,6 +36,9 @@ const RoomContextProvider = ({children}) => {
 				setunsubscribeToRoomUpdates(() => {
 					return () => { subscription1(); subscription2(); }
 				})
+				navigate(`/play/${slug}`)
+			} else {
+				navigate('/')
 			}
 		},
 		onError: (err) => {
@@ -125,14 +128,16 @@ const RoomContextProvider = ({children}) => {
 	}
 
 	const getInitialRoomData = (slug) => {
-		console.log('Getting initial room data')
+		if(!unsubscribeToRoomUpdates) {
+			console.log('Getting initial room data')
 
-        getRooms({
-            variables: {
-                slug
-            }
-        })		
-    }
+			getRooms({
+				variables: {
+					slug
+				}
+			})	
+		}
+	}
 
 	const addPlayer = (player) => {
 		

@@ -1,8 +1,9 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { Router } from "@reach/router";
 
 import SEO from '../components/seo'
+import withAuthentication from '../components/hocs/withAuthentication'
 import { GameContextProvider } from '../components/Context/GameProvider'
 import Lobby from '../components/Lobby'
 import GameRoom from '../components/GameRoom'
@@ -16,7 +17,9 @@ const Content = ({slug}) => {
 	const { room, getInitialRoomData } = useRoom()
 
 	useEffect(() => {
-		if(slug) getInitialRoomData(slug)
+		if(slug) {
+			getInitialRoomData(slug)
+		}
 	}, [])
 
 	return(
@@ -67,4 +70,4 @@ GamePage.propTypes = {
 
 }
 
-export default GamePage
+export default withAuthentication(GamePage)
