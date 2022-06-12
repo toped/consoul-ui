@@ -87,10 +87,10 @@ const Login = () => {
 
 
 	useEffect(() => {
-		if (user.signedIn) {
+		if (user.signedIn && !user.loading) {
 			navigate('/')
 		}
-	}, [])
+	}, [user])
 	
 	const LoginForm = () => {
 		return (

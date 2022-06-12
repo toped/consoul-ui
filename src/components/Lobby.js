@@ -26,8 +26,7 @@ RoomSettings.propTypes = {
 const Lobby = () => {
 
 	const { user } = useUser()
-	const { roomData, roomIncludesPlayer, addPlayer, removePlayer, startGame, deleteRoom, loadingRoomDeletion, loadingRoomUpdate, roomFull} = useRoom()
-	const room = roomData?.rooms[0]
+	const { room, roomIncludesPlayer, addPlayer, removePlayer, startGame, deleteRoom, loadingRoomDeletion, loadingRoomUpdate, roomFull} = useRoom()
 
 	useEffect(() => {
 		if(!roomIncludesPlayer(user.uid) && roomFull()){
@@ -59,7 +58,7 @@ const Lobby = () => {
 						user?.uid === room?.host
 							? 
 							<>
-								<Button className="mb-4" color="MediumSeaGreen" outline onClick={()=>startGame()}>Start Game</Button>
+								<Button className="mb-4" color="MediumSeaGreen" outline onClick={()=>startGame()}>Start game</Button>
 								<Button className="mb-4" color='Crimson' outline onClick={() => deleteRoom(user?.uid)} loading={loadingRoomDeletion}>End game</Button>
 							</>
 							: null

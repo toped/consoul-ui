@@ -13,12 +13,11 @@ import { FullPageDiv } from '../components/styled-components';
 import { useUser } from '../components/Context/UserProvider';
 
 const Content = ({slug}) => {	
-	const { roomData, getInitialRoomData } = useRoom()
-	const room = roomData?.rooms.length ? roomData?.rooms[0] : null
+	const { room, getInitialRoomData } = useRoom()
 
 	useEffect(() => {
-		getInitialRoomData(slug)
-	},[])
+		if(slug) getInitialRoomData(slug)
+	}, [])
 
 	return(
 		<>

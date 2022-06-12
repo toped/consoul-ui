@@ -16,13 +16,12 @@ const useGame = () => (useContext(GameContext))
 const GameContextProvider = ({children}) => {
 
 	const [game, setGame] = useState(null)
-    const { roomData } = useRoom()
-    const room = roomData?.rooms.length ? roomData?.rooms[0] : null
+    const { room } = useRoom()
 
     const [updateRoomMutation] = useMutation(
 		UPDATE_ROOM, {
 			onError: (err) => {
-				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
+				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage('GameContextProvider.updateRoomMutation', err)}`)
 			}
 		}
 	)

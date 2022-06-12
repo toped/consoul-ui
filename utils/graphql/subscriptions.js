@@ -46,6 +46,7 @@ export const ROOM_DELETED_SUBSCRIPTION = gql`
   subscription roomDeleted($slug: String!){
     roomDeleted(slug: $slug){
       id
+      slug
     }
   }
 `

@@ -2,8 +2,8 @@
  * Returns graphql errors
  * @param {*} error 
  */
-const extractGQLErrorMessage = (error) => {
-	console.log(JSON.stringify(error))
+const extractGQLErrorMessage = (method, error) => {
+	console.log(`${method} - ${JSON.stringify(error)}`)
 	return error.message.split('[GraphQL error]: ')[0]
 }
 

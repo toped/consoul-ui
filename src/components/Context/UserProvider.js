@@ -23,7 +23,6 @@ const UserContextProvider = ({children}) => {
 
 					if (firebaseUser && !user?.signedIn) {
 						console.log('Got firebaseuser. Signing user in...')
-						// getUserRoomData(firebaseUser?.uid)						
 					} 
 
 					if (firebaseUser && user?.signedIn) {

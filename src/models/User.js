@@ -5,7 +5,7 @@ class User {
 		this.photoURL = firebaseUser?.photoURL
 		this.uid = firebaseUser?.uid
 		this.signedIn = Boolean(firebaseUser)
-		this.loading = firebaseUser === undefined
+		this.loading = Boolean(!firebaseUser)
 		this.anonymousUser = Boolean(firebaseUser) ? false : true
 	}	
 }

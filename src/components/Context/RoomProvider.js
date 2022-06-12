@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useLazyQuery, useMutation } from '@apollo/react-hooks'
 import { navigate } from 'gatsby'
@@ -16,19 +16,19 @@ const useRoom = () => (useContext(RoomContext))
 const RoomContextProvider = ({children}) => {
 	
 	const [unsubscribeToRoomUpdates, setunsubscribeToRoomUpdates] = useState(null)
-	
-    const getInitialRoomData = (slug) => {
-        getRooms({
-            variables: {
-                slug
-            }
-        })		
-    }
 
+	useEffect(() => {
+		console.log('unsubscribeToRoomUpdates is:', unsubscribeToRoomUpdates)
+	}, [])
+
+	// Queries
     const [getRooms, {subscribeToMore, data: roomData, loading: loadingRoom }] = useLazyQuery(ROOMS, {
-		onCompleted: () => {
-			const slug = roomData?.rooms[0]?.slug
-			
+		onCompleted: (data) => {
+			const room = getRoom()
+			console.log(roomData)
+			console.log(`and the room is ${room}`)
+			const slug = room?.slug
+
 			if(slug && !unsubscribeToRoomUpdates) {
 				console.log('Subscribing to room updates')
 				const subscription1 = subscribeToRoomUpdates(slug)
@@ -39,18 +39,47 @@ const RoomContextProvider = ({children}) => {
 			}
 		},
 		onError: (err) => {
-			console.error(err)
+			toaster.danger(`Oops: ${formatters.extractGQLErrorMessage('RoomContextProvider.getRooms', err)}`)
 		},
 		fetchPolicy: 'network-only'
 	})
 
+	// Mutations
+	const [createRoomMutation, {loading: loadingRoomCreation}] = useMutation(
+		CREATE_ROOM, {
+			onError: (err) => {
+				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage('RoomContextProvider.createRoomMutation', err)}`)
+			}
+		}
+	)
+
+	const [updateRoomMutation, { loading: loadingRoomUpdate }] = useMutation(
+		UPDATE_ROOM, {
+			onError: (err) => {
+				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage('RoomContextProvider.updateRoomMutation', err)}`)
+			}
+		}
+	)
+
+	const [deleteRoomMutation, {loading: loadingRoomDeletion}] = useMutation(
+		DELETE_ROOM, {
+			onError: (err) => {
+				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage('RoomContextProvider.deleteRoomMutation', err)}`)
+			}
+		}
+	)
+
+	// Subscriptions	
 	const subscribeToDeletion = (slug) => {
 		const unsubscribe = subscribeToMore({
 			document: ROOM_DELETED_SUBSCRIPTION,
 			variables: { slug },
-			updateQuery: (prevRooms) => {
+			updateQuery: (prevRooms, { subscriptionData }) => {
+				console.log('!! ⛔️ GOT A ROOM DELETION UPDATE ⛔️ !!')
+				unsubscribe()
+				toaster.danger('Room has closed!')
+				
 				navigate('/') 
-				toaster.danger('Game has ended!')
 
 				return Object.assign({}, prevRooms, {
 					rooms: null
@@ -62,12 +91,11 @@ const RoomContextProvider = ({children}) => {
 	}
 
 	const subscribeToRoomUpdates = (slug) => {
-
 		const unsubscribe = subscribeToMore({
 			document: ROOM_SUBSCRIPTION,
 			variables: { slug },
 			updateQuery: (prevRooms, { subscriptionData }) => {
-
+				console.log('!! ⭐️ GOT A ROOM UPDATE ⭐️ !!')
 				if (!subscriptionData.data) return prevRooms
 
 				//check players
@@ -93,36 +121,23 @@ const RoomContextProvider = ({children}) => {
 			}
 		})
 
-
 		return unsubscribe
 	}
-		
 
-	const roomIncludesPlayer = (uid) => {
-		if(!roomData) return
-		const room = roomData.rooms[0]
-		return room?.players.map(p => p.uid).includes(uid)
-	}
+	const getInitialRoomData = (slug) => {
+		console.log('Getting initial room data')
 
-	const roomFull = () => {
-		if(!roomData) return
-		const room = roomData.rooms[0]
-		return room?.players.length < room?.settings.maxPlayers
-	}
-
-	const [updateRoomMutation, { loading: loadingRoomUpdate }] = useMutation(
-		UPDATE_ROOM, {
-			onError: (err) => {
-				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
-			}
-		}
-	)
+        getRooms({
+            variables: {
+                slug
+            }
+        })		
+    }
 
 	const addPlayer = (player) => {
 		
-		if(!roomData) return
-
-		const room = roomData.rooms[0]
+		const room = getRoom()
+		if(!room) return
 
 		updateRoomMutation(
 			{
@@ -138,24 +153,18 @@ const RoomContextProvider = ({children}) => {
 			}
 		)
 	}
-
+	
 	const removePlayer = (player) => {
-		
-		if(!roomData) return
+		const room = getRoom()
+		if(!room) return
 
-		const room = roomData.rooms[0]
-
-		// check if player to be removed is host
-		if(room.host === player.uid) {
-			tryReassignRoomHost(player.uid)
-		}
-
-		// TODO: Check if game can continue with current number of players
-		console.log('removing player...')
-
+		console.log('Removing player')
 		// currently assuming, player can only remove themself
+		// if we were using removePlayer() to kick a player, we would need to 
+		// revisit this
+		console.log('unsubscribing becuase player removed')
 		unsubscribe()
-
+		
 		updateRoomMutation(
 			{
 				variables: {
@@ -168,16 +177,16 @@ const RoomContextProvider = ({children}) => {
 				},
 				onCompleted: () => {
 					navigate('/')
-				}
+				},
+				fetchPolicy: 'no-cache'
 			}
 		)
 	}
 
 	const startGame = () => {
 		
-		if(!roomData) return
-
-		const room = roomData.rooms[0]
+		const room = getRoom()
+		if(!room) return
 
 		updateRoomMutation(
 			{
@@ -191,85 +200,45 @@ const RoomContextProvider = ({children}) => {
 		)
 	}
 
-	const [deleteRoomMutation, {loading: loadingRoomDeletion}] = useMutation(
-		DELETE_ROOM, {
-			onCompleted: (data) => {
-				//navigate to home
-				navigate('/') 
-			},
-			onError: (err) => {
-				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
-			}
-		}
-	)
-
 	const deleteRoom = (uid) => {
-		unsubscribe()
-
+		const room = getRoom()
+		if(!room) return
+		
+		console.log(`Deleting Room`)
 		deleteRoomMutation(
 			{
 				variables: {
 					host:  uid
+				},
+				update: (cache, { data }) => {
+					console.log(`Delete complete - updating cache for room with slug:...${room.slug}`)
+					try {
+						cache.writeQuery({
+							query: ROOMS,
+							variables: {
+								slug: room.slug
+							},
+							data: {
+								rooms: null
+							}
+						})
+					} catch (error) {
+						console.log('error occured writing to apollo cache')
+					}
+				},
+				onCompleted: (data) => {
+					console.log('unsubscribing becuase room deleted')
+					unsubscribe()
+					//navigate to home
+					navigate('/') 
 				}
 			}
 		)
 	}
 
-	/**
-	 * Used when curren host needs to sign out and leave game
-	 * @param {User} currentHost 
-	 */
-	const tryReassignRoomHost = (currentHostId) => {
-		console.log('Attemptng to reassign host')
-		console.log('Host to be reassigned->', currentHostId)
-		const room = roomData.rooms[0]
-		let potentialHostList = room.players.filter(p => p.uid !== currentHostId)
-		
-		console.log('potentialHostList->', potentialHostList)
-
-		
-		potentialHostList[0] = {
-			...potentialHostList[0],
-			isHost: true
-		}
-
-		let newPlayerList = potentialHostList
-
-		console.log('newplayerlist->', newPlayerList)
-		if(newPlayerList.length <= 2){
-			toaster.warning('Host left! Not enough players to continue... 😢')
-			deleteRoom(room.host)
-		} else {
-			updateRoomMutation(
-				{
-					variables: {
-						room: {
-							...room,
-							host: newPlayerList[0].uid,
-							players: newPlayerList
-						}
-					},
-					onCompleted: () => {
-						navigate('/')
-					}
-				}
-			)
-		}
-	}
-
-	const [createRoomMutation, {loading: loadingRoomCreation}] = useMutation(
-		CREATE_ROOM, {
-			onCompleted: (data) => {
-				//navigate to lobby
-				navigate(`/play/${data.createRoom.slug}`) 
-			},
-			onError: (err) => {
-				toaster.danger(`Oops: ${formatters.extractGQLErrorMessage(err)}`)
-			}
-		}
-	)
-
 	const createRoom = (uid, rounds, timeLimit, maxPlayers) => {
+		console.log(`Creating Room`)
+
 		createRoomMutation(
 			{
 				variables: {
@@ -281,21 +250,45 @@ const RoomContextProvider = ({children}) => {
 							maxPlayers
 						}
 					}
-				}
+				},
+				onCompleted: (data) => {
+					//navigate to lobby
+					navigate(`/play/${data.createRoom.slug}`) 
+				},
 			}
 		)
 	}
 
+	// Helper functions
+	const getRoom = () => {
+		return roomData?.rooms?.length ? roomData?.rooms[0] : null
+	}
+
+	const roomIncludesPlayer = (uid) => {
+		const room = getRoom()
+		if(!room) return
+
+		return room?.players.map(p => p.uid).includes(uid)
+	}
+
+	const roomFull = () => {
+		const room = getRoom()
+		if(!room) return
+
+		return room?.players.length < room?.settings.maxPlayers
+	}
+
 	const unsubscribe = () => {
 		if(typeof(unsubscribeToRoomUpdates) === 'function') {
-			console.log('unsubscribing to room updates')
+			console.log('unsubscribed')
 			unsubscribeToRoomUpdates()
+			setunsubscribeToRoomUpdates(null)
 		}
 	}
 
 	return (
 		<RoomContext.Provider value={{
-			roomData, 
+			room: getRoom(), 
 			getInitialRoomData, 
 			subscribeToRoomUpdates, 
 			subscribeToDeletion, 
@@ -305,7 +298,6 @@ const RoomContextProvider = ({children}) => {
 			removePlayer,
 			startGame,
 			deleteRoom,
-			tryReassignRoomHost,
 			createRoom,
 			loadingRoomCreation,
 			loadingRoomDeletion,

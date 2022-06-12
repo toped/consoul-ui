@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import  Link from 'gatsby-link'
 
@@ -7,10 +7,14 @@ import { useUser } from './Context/UserProvider'
 
 const Home = () => {
 	const {user, getUserRoomData, loadingHostedRooms, loadingPlayingRooms} = useUser()
-	
+	const [ calledGetUserRoomData, setCalledGetUserRoomData ] = useState(false)
+
 	useEffect(()=> {
-		getUserRoomData()
-	},[])
+		if(user.signedIn && !user.loading && !calledGetUserRoomData){
+			getUserRoomData()
+			setCalledGetUserRoomData(true)
+		}
+	})
 
 	return (
 		<>

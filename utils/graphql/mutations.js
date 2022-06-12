@@ -21,6 +21,9 @@ export const UPDATE_ROOM = gql`
 
 export const DELETE_ROOM = gql`
   mutation deleteRoom($host: String) {
-    deleteRoom(host: $host)
+    deleteRoom(host: $host){
+      id
+      slug
+    }
   }
 `

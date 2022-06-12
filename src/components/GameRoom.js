@@ -12,10 +12,8 @@ import { useGame } from './Context/GameProvider'
 const GameRoom = () => {
 
 	const { user } = useUser()
-	const { roomData, roomIncludesPlayer} = useRoom()
+	const { room, roomIncludesPlayer} = useRoom()
 	const { game, setGame, updateGameObject, submitCard, revealCard, highlightCard } = useGame()
-	const room = roomData.rooms[0]
-
   
 	useEffect(() => {
 		if(!roomIncludesPlayer(user.uid)) {
