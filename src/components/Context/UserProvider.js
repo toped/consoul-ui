@@ -14,13 +14,18 @@ const UserContextProvider = ({children}) => {
 	const [user, setUser] = useState(new User())
 	const { getFirebase } = useFirebase()
 
+
+	useEffect(() => {
+	  console.log(user)
+	})
+	
 	const getCurrentUser = () => {
 		return new Promise((resolve, reject) => {
 			const firebase = getFirebase()
 			const unsubscribe = firebase.auth.onAuthStateChanged(firebaseUser => {
 				unsubscribe();
 				
-				console.log('got user state change->', firebaseUser)
+				console.log('got user state change. firebaseUser=', firebaseUser)
 
 				if (firebaseUser && !user?.signedIn) {
 					console.log('Got firebaseuser. Signing user in...')
@@ -33,29 +38,36 @@ const UserContextProvider = ({children}) => {
 				if(!firebaseUser && !user?.signedIn) {
 					console.log('user not signed in... updating')
 				}
+				
+				const newUser = new User(firebaseUser)
+				if(!newUser.isEqualToUser(user)){
+					setUser(newUser)
+				}
 
-				setUser(new User(firebaseUser))
-				resolve(new User(firebaseUser));
+				if(newUser.signedIn) {
+					getUserRoomData(newUser.uid)
+				}
+	
+				console.log('gameUser=', newUser)
+				resolve(newUser);
 
 			}, reject);
 		});
 	}
 
 	/* Side effect of getUserRoomData is that user state is modified */
-	const getUserRoomData = () => {
-		if(user.signedIn) {
+	const getUserRoomData = (uid) => {
 			getUserHostedRooms({
 				variables: {
-					host: user.uid
+					host: uid
 				}
 			})
 	
 			getUserPlayingRooms({
 				variables: {
-					playerUid: user.uid
+					playerUid: uid
 				}
 			})
-		}
 	}
 
 	/* Query to check if user is hosting a room */
@@ -111,7 +123,7 @@ const UserContextProvider = ({children}) => {
 	)
 
 	return (
-		<UserContext.Provider value={{user, getCurrentUser, getUserRoomData, loadingHostedRooms, loadingPlayingRooms}}>
+		<UserContext.Provider value={{user, getCurrentUser, loadingHostedRooms, loadingPlayingRooms}}>
 			{children}
 		</UserContext.Provider>
 	)

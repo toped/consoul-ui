@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import  Link from 'gatsby-link'
 
@@ -6,21 +6,13 @@ import { Typography, Button } from './primitives'
 import { useUser } from './Context/UserProvider'
 
 const Home = () => {
-	const {user, getUserRoomData, loadingHostedRooms, loadingPlayingRooms} = useUser()
-	const [ calledGetUserRoomData, setCalledGetUserRoomData ] = useState(false)
-
-	useEffect(()=> {
-		if(user.signedIn && !user.loading && !calledGetUserRoomData){
-			getUserRoomData()
-			setCalledGetUserRoomData(true)
-		}
-	})
+	const { user, loadingHostedRooms, loadingPlayingRooms } = useUser()
 
 	return (
 		<>
 			<Typography variant="h3">What you Meme?</Typography>
 			{
-				user?.playingRoom
+				user.playingRoom
 					?
 					<Link to={`/play/${user?.playingRoom?.slug}`}>
 						<Button className="mb-4" loading={loadingPlayingRooms} color="MediumSeaGreen" outline>Re-join Current Game</Button>
@@ -32,7 +24,7 @@ const Home = () => {
 			}
 
 			{
-				!user?.playingRoom && !user?.hostedRoom
+				!user.playingRoom && !user.hostedRoom
 					?
 					<Link to="/setup">
 						<Button className="mb-4" loading={loadingHostedRooms} outline>Host a Game</Button>
@@ -47,7 +39,6 @@ const Home = () => {
 }
 
 Home.propTypes = {
-	user: PropTypes.object,
 	loadingHostedRooms: PropTypes.bool,
 	loadingPlayingRooms: PropTypes.bool
 }

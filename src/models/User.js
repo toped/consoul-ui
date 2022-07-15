@@ -8,5 +8,14 @@ class User {
 		this.loading = !Boolean(firebaseUser)
 		this.anonymousUser = Boolean(firebaseUser) ? false : true
 	}	
+
+	isEqualToUser(user) {
+		return this.displayName == user.displayName &&
+			this.email == user.email &&
+			this.photoURL == user.photoURL &&
+			this.uid == user.uid &&
+			this.signedIn == user.signedIn &&
+			this.anonymousUser == user.anonymousUser
+	}	
 }
 export default User
