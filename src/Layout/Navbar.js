@@ -57,6 +57,7 @@ const _ = ({
 		if (firebase) {
 			removePlayer(user)
 			firebase.doSignOut()
+			navigate('/login')
 		}
 	}
 	

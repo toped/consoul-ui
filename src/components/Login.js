@@ -72,7 +72,6 @@ const Login = () => {
 	const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 	const { getFirebase } = useFirebase()
-	const {user} = useUser()
 	
 	const cookiesEnabled = () => {
 		if (typeof window !== 'undefined') {
@@ -84,13 +83,6 @@ const Login = () => {
 		}
 		return cookieEnabled
 	}
-
-
-	useEffect(() => {
-		if (user.signedIn && !user.loading) {
-			navigate('/')
-		}
-	}, [user])
 	
 	const LoginForm = () => {
 		return (
@@ -120,7 +112,7 @@ const Login = () => {
 									>
 									Login
 									</button>
-									<button className="login__btn login__google" onClick={() => getFirebase()?.signInWithGoogle()}>
+									<button className="login__btn login__google" onClick={() => getFirebase()?.signInWithGoogle().then(user=>{if(user){navigate('/')}})}>
 									Login with Google
 									</button>
 									<div>
