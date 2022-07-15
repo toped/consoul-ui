@@ -71,7 +71,7 @@ const Login = () => {
 
 	const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-	const { firebase } = useFirebase()
+	const { getFirebase } = useFirebase()
 	const {user} = useUser()
 	
 	const cookiesEnabled = () => {
@@ -96,7 +96,7 @@ const Login = () => {
 		return (
 			<>
 				{
-					firebase != null
+					getFirebase() != null
 						? <StyledFirebaseAuth>
 							<div className="login">
 								<div className="login__container">
@@ -116,11 +116,11 @@ const Login = () => {
 									/>
 									<button
 									className="login__btn"
-									onClick={() => firebase?.signInWithEmailAndPassword(email, password)}
+									onClick={() => getFirebase()?.signInWithEmailAndPassword(email, password)}
 									>
 									Login
 									</button>
-									<button className="login__btn login__google" onClick={() => firebase?.signInWithGoogle()}>
+									<button className="login__btn login__google" onClick={() => getFirebase()?.signInWithGoogle()}>
 									Login with Google
 									</button>
 									<div>
@@ -163,9 +163,6 @@ const Login = () => {
 }
 
 Login.propTypes = {
-	firebase: PropTypes.object,
-	firebaseUIConfig: PropTypes.object,
-	user: PropTypes.object,
 }
 
 export default Login

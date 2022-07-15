@@ -20,7 +20,7 @@ const Content = ({slug}) => {
 		if(slug) {
 			getInitialRoomData(slug)
 		}
-	}, [])
+	}, [slug])
 
 	return(
 		<>

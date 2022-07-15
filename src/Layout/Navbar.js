@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import Link from 'gatsby-link'
@@ -42,12 +42,18 @@ const _ = ({
 	page, fixed, loadingRooms, loadingHostedRooms, loadingPlayingRooms, ...props
 }) => {
 			
-	const { firebase } = useFirebase()
-	const { user } = useUser()
+	useEffect(() => {
+		getCurrentUser()
+	}, [])
+
+	const { getFirebase } = useFirebase()
+	const { user, getCurrentUser } = useUser()
 	const { removePlayer } = useRoom()
 
 
 	const logOut = () => {
+		const firebase = getFirebase()
+		
 		if (firebase) {
 			removePlayer(user)
 			firebase.doSignOut()

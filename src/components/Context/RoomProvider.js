@@ -25,8 +25,7 @@ const RoomContextProvider = ({children}) => {
     const [getRooms, {subscribeToMore, data: roomData, loading: loadingRoom }] = useLazyQuery(ROOMS, {
 		onCompleted: (data) => {
 			const room = getRoom()
-			console.log(roomData)
-			console.log(`and the room is ${room}`)
+			console.log('and the room is: ', room)
 			const slug = room?.slug
 
 			if(slug && !unsubscribeToRoomUpdates) {
@@ -36,10 +35,7 @@ const RoomContextProvider = ({children}) => {
 				setunsubscribeToRoomUpdates(() => {
 					return () => { subscription1(); subscription2(); }
 				})
-				navigate(`/play/${slug}`)
-			} else {
-				navigate('/')
-			}
+			} 
 		},
 		onError: (err) => {
 			toaster.danger(`Oops: ${formatters.extractGQLErrorMessage('RoomContextProvider.getRooms', err)}`)

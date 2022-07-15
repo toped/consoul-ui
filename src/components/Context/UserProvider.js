@@ -12,30 +12,34 @@ const useUser = () => (useContext(UserContext))
 
 const UserContextProvider = ({children}) => {
 	const [user, setUser] = useState(new User())
-	const { firebase } = useFirebase()
+	const { getFirebase } = useFirebase()
 
-	useEffect(() => {
-		if(firebase) {			
-			firebase.auth.onAuthStateChanged(
-				(firebaseUser) => {
-					console.log('got user state change->', firebaseUser)
-					setUser(new User(firebaseUser))
+	const getCurrentUser = () => {
+		return new Promise((resolve, reject) => {
+			const firebase = getFirebase()
+			const unsubscribe = firebase.auth.onAuthStateChanged(firebaseUser => {
+				unsubscribe();
+				
+				console.log('got user state change->', firebaseUser)
 
-					if (firebaseUser && !user?.signedIn) {
-						console.log('Got firebaseuser. Signing user in...')
-					} 
+				if (firebaseUser && !user?.signedIn) {
+					console.log('Got firebaseuser. Signing user in...')
+				} 
 
-					if (firebaseUser && user?.signedIn) {
-						console.log('user already signed in... not updating')
-					}
-
-					if(!firebaseUser && !user?.signedIn) {
-						console.log('user not signed in... updating')
-					}
+				if (firebaseUser && user?.signedIn) {
+					console.log('user already signed in... not updating')
 				}
-			)
-		} 
-	}, [firebase])
+
+				if(!firebaseUser && !user?.signedIn) {
+					console.log('user not signed in... updating')
+				}
+
+				setUser(new User(firebaseUser))
+				resolve(new User(firebaseUser));
+
+			}, reject);
+		});
+	}
 
 	/* Side effect of getUserRoomData is that user state is modified */
 	const getUserRoomData = () => {
@@ -107,7 +111,7 @@ const UserContextProvider = ({children}) => {
 	)
 
 	return (
-		<UserContext.Provider value={{user, getUserRoomData, loadingHostedRooms, loadingPlayingRooms}}>
+		<UserContext.Provider value={{user, getCurrentUser, getUserRoomData, loadingHostedRooms, loadingPlayingRooms}}>
 			{children}
 		</UserContext.Provider>
 	)
