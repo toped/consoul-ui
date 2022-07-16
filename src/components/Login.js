@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
+import React, { useState } from 'react'
 import { navigate } from 'gatsby'
 import { Spinner } from 'evergreen-ui'
 import { useFirebase } from './Context/FirebaseProvider'
@@ -7,7 +6,6 @@ import Link from 'gatsby-link'
 
 import { Typography } from './primitives'
 import styled from 'styled-components'
-import { useUser } from './Context/UserProvider'
 
 const Wrapper = styled.div`
   	display: flex;
@@ -73,17 +71,6 @@ const Login = () => {
     const [password, setPassword] = useState("");
 	const { getFirebase } = useFirebase()
 	
-	const cookiesEnabled = () => {
-		if (typeof window !== 'undefined') {
-			var cookieEnabled = window.navigator.cookieEnabled
-			if (!cookieEnabled){ 
-				document.cookie = 'testcookie'
-				cookieEnabled = document.cookie.indexOf('testcookie') !== -1
-			}
-		}
-		return cookieEnabled
-	}
-	
 	const LoginForm = () => {
 		return (
 			<>
@@ -130,25 +117,10 @@ const Login = () => {
 		)
 	}
 
-	const CookieMessage = () => {
-		return (
-			<>
-				<Typography variant="h5" weight="black" color="#FFF" className="text-center" >{'Do you have cookies disabled? 🧐'}</Typography>
-				<Typography variant="h6" weight="normal" color="#FFF" className="text-center" >{'Please enable cookies in your browser to login'}</Typography>
-			</>
-		)
-	}
-
 	return (
 		<Wrapper>
 			<LoginCard>
-				{
-					cookiesEnabled()
-						? <LoginForm/>
-						: typeof window !== 'undefined'
-							? <CookieMessage/>
-							: <Spinner size={24}/>
-				}
+					<LoginForm/>
 			</LoginCard>
 		</Wrapper>
 	)
