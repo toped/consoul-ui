@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import SocialSection from '../components/primitives/SocialSection'
 import { ThemeToggle, Typography } from '../components/primitives'
 import { useTheme } from './ThemeProvider'
+import { Badge } from 'evergreen-ui'
 
 const FooterWrapper = styled.div`
   font-size: .9rem;
@@ -21,6 +22,7 @@ function Footer() {
 				<div>
 					<div className="mb-4">
 						<Typography>© 2020 Tope Daramola</Typography>
+						<Badge className="ml-2">Alpha</Badge>
 					</div>
 					<SocialSection />
 				</div>

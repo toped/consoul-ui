@@ -63,19 +63,11 @@ const _ = ({navbar, footer, isLoading, loadingMessage, hero, breadcrumbs, conten
 				{
 					(breadcrumbs && !error) && <>{ breadcrumbs }</>
 				}
-				<div className={`flex flex-grow isLoading ${isLoading ? 'items-center justify-center' : ''}`}>
+				<div className={`flex flex-grow ${isLoading ? 'items-center justify-center' : ''}`}>
 					{
 						(isLoading && !error)
 							&& <Pane display="flex" flexDirection="column" alignItems="center">
 								<ThemedSpinner/>
-								<Pane marginY="1rem">
-									<Typography variant="body">
-										{
-											loadingMessage
-                    || LoadingMessages[Math.floor(Math.random() * LoadingMessages.length)]
-										}
-									</Typography>
-								</Pane>
 							</Pane>
 					}
 					{
