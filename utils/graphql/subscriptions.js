@@ -17,8 +17,6 @@ export const ROOM_SUBSCRIPTION = gql`
         anonymousUser
       }
       game {
-        rounds
-        timeLimit
         currentRound
         currentTurn
         countDownTime

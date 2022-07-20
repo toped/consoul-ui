@@ -237,7 +237,7 @@ const RoomContextProvider = ({children}) => {
 		)
 	}
 
-	const createRoom = (uid, rounds, timeLimit, maxPlayers) => {
+	const createRoom = (uid, rounds, timeLimit, maxPlayers, game) => {
 		console.log(`Creating Room`)
 
 		createRoomMutation(
@@ -249,7 +249,8 @@ const RoomContextProvider = ({children}) => {
 							rounds,
 							timeLimit,
 							maxPlayers
-						}
+						},
+						game
 					}
 				},
 				onCompleted: (data) => {

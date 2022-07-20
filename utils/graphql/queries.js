@@ -17,8 +17,6 @@ export const ROOMS = gql`
         anonymousUser
       }
       game {
-        rounds
-        timeLimit
         currentRound
         currentTurn
         countDownTime
@@ -41,18 +39,26 @@ export const ROOMS = gql`
     }
   }
 `
-export const CATEGORY = gql`
-  query category($category: String) {
-    category(title: $category)
+export const GAME = gql`
+  query game($game: String) {
+    game(title: $game)
   }
 `
 export const CATEGORIES = gql`
-  query categories {
-    categories{
+  query games {
+    games{
       title
       description
       imgSrc
       order
+      requirements {
+        minPlayers
+      }
+      setupOptions {
+        rounds
+        maxPlayers
+        timeLimit
+      }
     }
   }
 `

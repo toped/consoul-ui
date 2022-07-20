@@ -26,7 +26,7 @@ const GameRoom = () => {
     
 		// update game object on server
 		if (user?.uid && user.uid === room.host) {
-			if (!room.game) {
+			if (!room.game.currentRound) {
 				updateGameObject()
 			} else {
 				console.log('And we live->', room.game)
@@ -39,6 +39,8 @@ const GameRoom = () => {
 		if (room.game) {
 			const gameObj = new Game({
 				...room.game,
+				rounds: room.settings.rounds,
+				timeLimit: room.settings.timeLimit,
 				players: room.players
 			})
 

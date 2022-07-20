@@ -47,6 +47,8 @@ class Game {
 			...this
 		}
 		delete object.players
+		delete object.rounds
+		delete object.timeLimit
 
 		return object
 	}

@@ -12,6 +12,7 @@
         "@apollo/client": "^3.4.16",
         "@apollo/react-hooks": "^4.0.0",
         "@blueprintjs/core": "^3.42.0",
+        "@blueprintjs/popover2": "^1.4.2",
         "@contentful/rich-text-react-renderer": "^14.1.2",
         "aos": "^2.3.4",
         "apollo-boost": "^0.4.9",

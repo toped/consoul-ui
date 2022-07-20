@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { useQuery } from '@apollo/react-hooks'
@@ -6,6 +6,7 @@ import _ from 'lodash'
 
 import { CATEGORIES } from '../../../utils/graphql/queries'
 import { Loading } from './Loading'
+import Typography from './Typography'
 
 const Wrapper = styled.div`
   /* Hide scrollbar for Chrome, Safari and Opera */
@@ -29,9 +30,11 @@ const ActiveGame = styled.img`
   &:hover {
     transform: scale(1.1);
   }
+
+  border: ${({$isSelected}) => $isSelected ? '3px solid #EDE574' : 'none' };
 `
 
-const CategoryList = ({onGameTapped}) => {
+const GameList = ({onGameTapped}) => {
 
 	const { data: games } = useQuery(CATEGORIES, {
 		onCompleted: (data) => {
@@ -42,19 +45,23 @@ const CategoryList = ({onGameTapped}) => {
 		}
 	})
 
+	const [selectedGame, setSelectedGame] = useState({})
+
 	return (
 		<Wrapper className="flex flex-no-wrap p-2 overflow-hidden overflow-x-auto">
 			{
 				games
-					? _.orderBy(games.categories, (e) => { return e.order}, ['asc']).map(game => (
+					? _.orderBy(games.games, (e) => { return e.order}, ['asc']).map(game => (
 						<div 
 							key={game.title} 
 							className="flex flex-col items-center text-center mr-6 py-4" 
-							onClick={() => onGameTapped(game)}>
+							onClick={() => { onGameTapped(game); setSelectedGame(game) }}>
 							<ActiveGame 
 								src={game.imgSrc} 
+								$isSelected={ selectedGame?.title == game.title }
 								width="145"
 								alt="mini-logo"/>
+							<Typography variant="small" weight="medium" className="self-start m-0 mt-2">{game.title}</Typography>
 						</div>
 					))
 					: <Loading/>
@@ -63,8 +70,8 @@ const CategoryList = ({onGameTapped}) => {
 	)
 }
 
-CategoryList.propTypes = {
+GameList.propTypes = {
 	onGameTapped: PropTypes.func
 }
 
-export default CategoryList
+export default GameList

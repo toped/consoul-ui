@@ -39,10 +39,10 @@ const GameContextProvider = ({children}) => {
 		}
 		
 		const gameObj = new Game({
-			rounds: room.settings.rounds,
-			timeLimit: room.settings.timeLimit,
 			currentRound,
 			currentTurn,
+			rounds: room.settings.rounds,
+			timeLimit: room.settings.timeLimit,
 			players: room.players,
 			gameOver: game?.lastRound
 		})
