@@ -32,14 +32,14 @@ const Setup = () => {
 	`)
 
 	return (
-		<>
-			<div className="flex flex-col items-center p-4">
+		<div className="sm:flex sm:flex-col sm:items-center sm:justify-center">
+			<div className="p-4">
 				<Typography variant="h4" weight="bold">Game Setup</Typography>
-				<img src={setupMeme.childImageSharp.fluid.src} className="w-full md:w-1/2" alt="" />
+				{/* <img src={setupMeme.childImageSharp.fluid.src} className="w-full md:w-1/2" alt="" /> */}
 
 				{/* Settings Options */}
-				<div className="flex flex-col items-start mt-20">
-					<div className="mb-4">
+				<>
+					<div className="mb-4 mt-8">
 						<Typography variant="h5" weight="medium" className="m-0 mb-2">Choose a game:</Typography>
 						<GameList onGameTapped={(gameSelection) => {console.log(gameSelection); setSelectedGame(gameSelection)}}/>
 					</div>
@@ -83,7 +83,7 @@ const Setup = () => {
 					}
 					
 					{/* Confirm/Cancel */}
-					<div className="flex self-end mt-20">
+					<div className="flex mt-20 justify-end">
 						<div className="mb-4 mr-2">
 							<Link to="/">
 								<Button primary outline disabled={loadingRoomCreation}>Cancel</Button>
@@ -99,9 +99,9 @@ const Setup = () => {
 							</Tooltip2>
 						</div> 
 					</div>
-				</div>				
+				</>				
 			</div>
-		</>
+		</div>
 	)
 }
 

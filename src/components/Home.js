@@ -9,7 +9,7 @@ const Home = () => {
 	const { user, loadingHostedRooms, loadingPlayingRooms } = useUser()
 
 	return (
-		<>
+		<div className="flex flex-col items-center justify-center">
 			<Typography variant="h3">What you Meme?</Typography>
 			{
 				user.playingRoom
@@ -34,7 +34,7 @@ const Home = () => {
 			<Link to="/rules">
 				<Button secondary outline>How to Play</Button>
 			</Link>
-		</>
+		</div>
 	)
 }
 

@@ -41,7 +41,7 @@ const Lobby = () => {
 	}, [])
 
 	return (
-		<>
+		<div className="flex flex-col items-center justify-center">
 			{
 				!user.loading && user.signedIn
 				&&
@@ -73,7 +73,7 @@ const Lobby = () => {
 				!user.loading && !user.signedIn &&
 				<Typography variant="h3" weight="bold" className="m-0">Currntly, users are not allowed to play as guets. Please sign in to join this room.</Typography>
 			}
-		</>
+		</div>
 	)
 }
 

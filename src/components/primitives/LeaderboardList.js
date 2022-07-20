@@ -35,7 +35,7 @@ const LeaderboardItem = styled.div`
 const _ = ({players}) => {
 
 	const { user } = useUser()
-	const { removePlayer, loadingRoomUpdate } = useRoom()
+	const { room, removePlayer, loadingRoomUpdate, deleteRoom, loadingRoomDeletion } = useRoom()
 
 	return (
 		<Wrapper className="flex flex-col my-4 w-full">
@@ -59,7 +59,13 @@ const _ = ({players}) => {
 					))
 					: null
 			}
-			<Button className="mb-4" color='Crimson' outline onClick={() => removePlayer(user)} loading={loadingRoomUpdate}>Leave game</Button>
+			<Button className="my-4" secondary outline onClick={() => removePlayer(user)} loading={loadingRoomUpdate}>Leave game</Button>
+			{
+				user?.uid === room?.host
+					? 
+						<Button className="mb-4" color='Crimson' outline onClick={() => deleteRoom(user?.uid)} loading={loadingRoomDeletion}>End game</Button>
+					: null
+			}
 		</Wrapper>
 	)
 }

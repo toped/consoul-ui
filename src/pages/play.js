@@ -25,7 +25,6 @@ const Content = ({slug}) => {
 	return(
 		<>
 			<SEO title="Game" />
-			<FullPageDiv>
 			{
 				!room?.started
 					?
@@ -37,7 +36,6 @@ const Content = ({slug}) => {
 						<GameRoom slug={slug}/>
 					</GameContextProvider>
 			}
-			</FullPageDiv>
 		</>
 	)
 }
