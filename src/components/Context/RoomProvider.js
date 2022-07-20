@@ -273,11 +273,11 @@ const RoomContextProvider = ({children}) => {
 		return room?.players.map(p => p.uid).includes(uid)
 	}
 
-	const roomFull = () => {
+	const roomNotFull = () => {
 		const room = getRoom()
 		if(!room) return
 
-		return room?.players.length < room?.settings.maxPlayers
+		return room?.players.length + 1 <= room?.settings.maxPlayers
 	}
 
 	const unsubscribe = () => {
@@ -295,7 +295,7 @@ const RoomContextProvider = ({children}) => {
 			subscribeToRoomUpdates, 
 			subscribeToDeletion, 
 			roomIncludesPlayer,
-			roomFull,
+			roomNotFull,
 			addPlayer,
 			removePlayer,
 			startGame,

@@ -26,10 +26,10 @@ RoomSettings.propTypes = {
 const Lobby = () => {
 
 	const { user } = useUser()
-	const { room, roomIncludesPlayer, addPlayer, removePlayer, startGame, deleteRoom, loadingRoomDeletion, loadingRoomUpdate, roomFull} = useRoom()
+	const { room, roomIncludesPlayer, addPlayer, removePlayer, startGame, deleteRoom, loadingRoomDeletion, loadingRoomUpdate, roomNotFull} = useRoom()
 
 	useEffect(() => {
-		if(!roomIncludesPlayer(user.uid) && roomFull()){
+		if(!roomIncludesPlayer(user.uid) && roomNotFull()){
 			addPlayer({
 				displayName: user.displayName,
 				email: user.email,
